@@ -6,27 +6,31 @@ import path from 'node:path';
 import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
-import type { Category, Product } from '@/types';
+import { cacheDataReader } from '@/lib/server-cache';
+import type {
+  Category,
+  ProductCardDTO,
+  ProductDetailDTO,
+  ProductSeoDTO,
+} from '@/types';
 
 const FALLBACK_PRODUCT_IMAGE = '/icons/LogoIcon.svg';
 const PRODUCT_IMAGE_DIRECTORY = path.join(process.cwd(), 'public', 'products');
 
-const productListSelect = {
+const productCardSelect = {
   id: true,
   slug: true,
   name: true,
+  description: true,
+  createdAt: true,
   price: true,
   rating: true,
   opinions: true,
   qtySold: true,
-  imageUrl: true,
-} satisfies Prisma.ProductSelect;
-
-const productDetailSelect = {
-  ...productListSelect,
-  description: true,
   stock: true,
+  imageUrl: true,
   freeShipment: true,
+  isFeatured: true,
   category: {
     select: {
       slug: true,
@@ -34,8 +38,29 @@ const productDetailSelect = {
   },
 } satisfies Prisma.ProductSelect;
 
-type ProductListRecord = Prisma.ProductGetPayload<{
-  select: typeof productListSelect;
+const productDetailSelect = {
+  id: true,
+  slug: true,
+  name: true,
+  description: true,
+  createdAt: true,
+  price: true,
+  rating: true,
+  opinions: true,
+  qtySold: true,
+  stock: true,
+  imageUrl: true,
+  freeShipment: true,
+  isFeatured: true,
+  category: {
+    select: {
+      slug: true,
+    },
+  },
+} satisfies Prisma.ProductSelect;
+
+type ProductCardRecord = Prisma.ProductGetPayload<{
+  select: typeof productCardSelect;
 }>;
 
 type ProductDetailRecord = Prisma.ProductGetPayload<{
@@ -59,32 +84,36 @@ function resolveProductImage(imageUrl: string | null, slug: string): string {
   return existsSync(derivedImagePath) ? derivedImageUrl : FALLBACK_PRODUCT_IMAGE;
 }
 
-function mapProductList(record: ProductListRecord, categoryId: Category): Product {
+function mapProductCard(record: ProductCardRecord, categoryId: Category): ProductCardDTO {
   return {
     id: record.id,
+    slug: record.slug,
     title: record.name,
-    description: '',
+    description: record.description,
     categoryId,
+    createdAt: record.createdAt.toISOString(),
     image: resolveProductImage(record.imageUrl, record.slug),
     price: Number(record.price),
     rating: Number(record.rating),
     opinions: record.opinions,
     qtySold: record.qtySold,
-    stock: 0,
-    freeShipment: false,
+    stock: record.stock,
+    freeShipment: record.freeShipment,
+    isFeatured: record.isFeatured,
   };
 }
 
-function mapProductDetail(record: ProductDetailRecord): Product {
+function mapProductDetail(record: ProductDetailRecord): ProductDetailDTO {
   return {
-    ...mapProductList(record, record.category.slug as Category),
+    ...mapProductCard(record, record.category.slug as Category),
     description: record.description,
     stock: record.stock,
     freeShipment: record.freeShipment,
+    isFeatured: record.isFeatured,
   };
 }
 
-export async function readProducts(): Promise<Product[]> {
+const readProductCardRecords = cacheDataReader(async (): Promise<ProductCardRecord[]> => {
   const products = await prisma.product.findMany({
     where: {
       isActive: true,
@@ -92,41 +121,87 @@ export async function readProducts(): Promise<Product[]> {
         isActive: true,
       },
     },
-    select: {
-      ...productListSelect,
-      category: {
-        select: {
-          slug: true,
+    select: productCardSelect,
+    orderBy: {
+      createdAt: 'asc',
+    },
+  });
+
+  return products;
+});
+
+const readProductCardRecordsByCategory = cacheDataReader(
+  async (categorySlug: Category): Promise<ProductCardRecord[]> => {
+    const products = await prisma.product.findMany({
+      where: {
+        isActive: true,
+        category: {
+          slug: categorySlug,
+          isActive: true,
         },
       },
-    },
-    orderBy: {
-      createdAt: 'asc',
-    },
-  });
-
-  return products.map((product) => mapProductList(product, product.category.slug as Category));
-}
-
-export async function readProductsByCategory(categorySlug: Category): Promise<Product[]> {
-  const products = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      category: {
-        slug: categorySlug,
-        isActive: true,
+      select: productCardSelect,
+      orderBy: {
+        createdAt: 'asc',
       },
-    },
-    select: productListSelect,
-    orderBy: {
-      createdAt: 'asc',
-    },
-  });
+    });
 
-  return products.map((product) => mapProductList(product, categorySlug));
+    return products;
+  },
+);
+
+const readProductDetailRecordBySlug = cacheDataReader(
+  async (slug: string): Promise<ProductDetailRecord | null> => {
+    const product = await prisma.product.findFirst({
+      where: {
+        slug,
+        isActive: true,
+        category: {
+          isActive: true,
+        },
+      },
+      select: productDetailSelect,
+    });
+
+    return product;
+  },
+);
+
+export async function readProductCards(): Promise<ProductCardDTO[]> {
+  const products = await readProductCardRecords();
+
+  return products.map((product) => mapProductCard(product, product.category.slug as Category));
 }
 
-export async function readProductById(id: string): Promise<Product | null> {
+export async function readProductCardsByCategory(
+  categorySlug: Category,
+): Promise<ProductCardDTO[]> {
+  const products = await readProductCardRecordsByCategory(categorySlug);
+
+  return products.map((product) => mapProductCard(product, categorySlug));
+}
+
+export async function readProductDetailBySlug(slug: string): Promise<ProductDetailDTO | null> {
+  const product = await readProductDetailRecordBySlug(slug);
+
+  return product ? mapProductDetail(product) : null;
+}
+
+export async function readProductSeoBySlug(slug: string): Promise<ProductSeoDTO | null> {
+  return readProductDetailBySlug(slug);
+}
+
+export async function readProducts(): Promise<ProductCardDTO[]> {
+  return readProductCards();
+}
+
+export async function readProductsByCategory(categorySlug: Category): Promise<ProductCardDTO[]> {
+  return readProductCardsByCategory(categorySlug);
+}
+
+export async function readProductById(
+  id: string,
+): Promise<Pick<ProductDetailDTO, 'id' | 'slug'> | null> {
   const product = await prisma.product.findFirst({
     where: {
       id,
@@ -135,10 +210,17 @@ export async function readProductById(id: string): Promise<Product | null> {
         isActive: true,
       },
     },
-    select: productDetailSelect,
+    select: {
+      id: true,
+      slug: true,
+    },
   });
 
-  return product ? mapProductDetail(product) : null;
+  return product;
+}
+
+export async function readProductBySlug(slug: string): Promise<ProductDetailDTO | null> {
+  return readProductDetailBySlug(slug);
 }
 
 export async function readProductIds(): Promise<string[]> {
@@ -158,4 +240,23 @@ export async function readProductIds(): Promise<string[]> {
   });
 
   return products.map((product) => product.id);
+}
+
+export async function readProductSlugs(): Promise<string[]> {
+  const products = await prisma.product.findMany({
+    where: {
+      isActive: true,
+      category: {
+        isActive: true,
+      },
+    },
+    select: {
+      slug: true,
+    },
+    orderBy: {
+      createdAt: 'asc',
+    },
+  });
+
+  return products.map((product) => product.slug);
 }

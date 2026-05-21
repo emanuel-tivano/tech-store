@@ -1,18 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
 import { cartReducer } from '@/context/cart-context';
-import type { CartState, Product } from '@/types';
+import type { CartLineInput, CartState } from '@/types';
 
-const product: Product = {
+const product: CartLineInput = {
   id: 'abc123',
+  slug: 'mouse-gamer',
   title: 'Mouse gamer',
   description: 'Mouse ergonómico',
   categoryId: 'mouses',
   image: '/mouse.png',
   price: 100,
-  rating: 4.5,
-  opinions: 15,
-  qtySold: 20,
   stock: 8,
   freeShipment: true,
 };
@@ -46,6 +44,51 @@ describe('cartReducer', () => {
       id: product.id,
       quantity: 4,
     });
+  });
+
+  it('no supera el stock acumulado del producto', () => {
+    const nextState = cartReducer(
+      {
+        items: [{ ...product, quantity: 7 }],
+      },
+      {
+        type: 'ADD_ITEM',
+        payload: { product, quantity: 3 },
+      },
+    );
+
+    expect(nextState.items).toHaveLength(1);
+    expect(nextState.items[0]).toMatchObject({
+      id: product.id,
+      quantity: product.stock,
+    });
+  });
+
+  it('actualiza cantidad manualmente y respeta stock', () => {
+    const nextState = cartReducer(
+      { items: [{ ...product, quantity: 2 }] },
+      {
+        type: 'SET_ITEM_QUANTITY',
+        payload: { productId: product.id, quantity: 20 },
+      },
+    );
+
+    expect(nextState.items[0]).toMatchObject({
+      id: product.id,
+      quantity: product.stock,
+    });
+  });
+
+  it('elimina el item si la cantidad manual llega a cero', () => {
+    const nextState = cartReducer(
+      { items: [{ ...product, quantity: 2 }] },
+      {
+        type: 'SET_ITEM_QUANTITY',
+        payload: { productId: product.id, quantity: 0 },
+      },
+    );
+
+    expect(nextState.items).toHaveLength(0);
   });
 
   it('elimina un item del carrito', () => {

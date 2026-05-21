@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
+import { TrustSignals } from '@/components/trust-signals';
 import { getCartLineTotal, useCart } from '@/context/cart-context';
 
 const currencyFormatter = new Intl.NumberFormat('es-AR', {
@@ -14,7 +16,8 @@ const CART_IMAGE_HEIGHT = 112;
 const FALLBACK_PRODUCT_IMAGE = '/icons/LogoIcon.svg';
 
 export function CartPageContent() {
-  const { cart, clearCart, getTotalItems, getTotalPrice, removeItem } = useCart();
+  const { cart, clearCart, getTotalItems, getTotalPrice, removeItem, setItemQuantity } = useCart();
+  const [limitMessageProductId, setLimitMessageProductId] = useState<string | null>(null);
 
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
@@ -120,9 +123,51 @@ export function CartPageContent() {
                           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                             Cantidad
                           </p>
-                          <p className="mt-1 text-lg font-semibold text-slate-950">
-                            {item.quantity}
+                          <div className="mt-2 inline-flex items-center rounded-full border border-slate-200 bg-white">
+                            <button
+                              type="button"
+                              className="px-3 py-2 text-sm font-semibold text-slate-700 disabled:text-slate-300"
+                              aria-label={`Disminuir cantidad de ${item.title}`}
+                              disabled={item.quantity <= 1}
+                              onClick={() => {
+                                setLimitMessageProductId(null);
+                                setItemQuantity(item.id, item.quantity - 1);
+                              }}
+                            >
+                              -
+                            </button>
+                            <span
+                              className="min-w-10 px-3 text-center text-sm font-semibold text-slate-950"
+                              aria-live="polite"
+                            >
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              className="px-3 py-2 text-sm font-semibold text-slate-700 disabled:text-slate-300"
+                              aria-label={`Aumentar cantidad de ${item.title}`}
+                              disabled={item.quantity >= item.stock}
+                              onClick={() => {
+                                if (item.quantity >= item.stock) {
+                                  setLimitMessageProductId(item.id);
+                                  return;
+                                }
+
+                                setLimitMessageProductId(null);
+                                setItemQuantity(item.id, item.quantity + 1);
+                              }}
+                            >
+                              +
+                            </button>
+                          </div>
+                          <p className="mt-2 text-xs text-slate-500">
+                            Máximo disponible: {item.stock}
                           </p>
+                          {limitMessageProductId === item.id ? (
+                            <p className="mt-1 text-xs font-medium text-amber-700" role="status">
+                              Ya alcanzaste el stock disponible para este producto.
+                            </p>
+                          ) : null}
                         </div>
 
                         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
@@ -146,13 +191,19 @@ export function CartPageContent() {
                     </div>
 
                     <div className="flex flex-col gap-3 lg:min-w-44 lg:items-end">
-                      <Link href={`/item/${item.id}`} className="btn-secondary w-full lg:w-auto">
+                      <Link
+                        href={`/products/${item.slug}`}
+                        className="btn-secondary w-full lg:w-auto"
+                      >
                         Ver producto
                       </Link>
                       <button
                         type="button"
                         className="btn-danger w-full lg:w-auto"
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => {
+                          setLimitMessageProductId(null);
+                          removeItem(item.id);
+                        }}
                       >
                         Quitar producto
                       </button>
@@ -220,6 +271,28 @@ export function CartPageContent() {
           </div>
         </aside>
       </div>
+
+      <TrustSignals
+        title="Antes de finalizar la compra"
+        items={[
+          {
+            title: 'Cantidades editables',
+            description: 'Podés aumentar o disminuir unidades desde el carrito sin perder el contexto de compra.',
+          },
+          {
+            title: 'Stock controlado',
+            description: 'La tienda respeta el máximo disponible por producto y avisa cuando llegás al límite.',
+          },
+          {
+            title: 'Resumen claro',
+            description: 'El subtotal se recalcula con cada cambio para revisar tu pedido antes de avanzar.',
+          },
+          {
+            title: 'Compra guiada',
+            description: 'El flujo actual está pensado para revisar productos y cantidades antes de registrar la orden.',
+          },
+        ]}
+      />
     </section>
   );
 }

@@ -1,53 +1,73 @@
+import { CatalogControls } from '@/features/catalog/catalog-controls';
 import { PageState } from '@/components/page-state';
 import { ProductGrid } from '@/components/product-grid';
-import type { Category, Product } from '@/types';
+import type { CatalogState } from '@/lib/catalog-query';
+import type { Category, ProductCardDTO } from '@/types';
 
 interface CatalogViewProps {
-  products: Product[];
-  categoryId?: Category;
+  products: ProductCardDTO[];
+  basePath: '/' | `/category/${Category}`;
+  categoryFilterEnabled: boolean;
+  emptyDescription: string;
+  heading: string;
+  searchEmptyDescription?: string;
+  state: CatalogState;
+  supportingText?: string;
 }
 
-const labels: Record<Category, string> = {
-  monitores: 'Monitores',
-  teclados: 'Teclados',
-  mouses: 'Mouses',
-  auriculares: 'Auriculares',
-};
-
-export function CatalogView({ products, categoryId }: CatalogViewProps) {
-  const title = categoryId
-    ? `${labels[categoryId]} más vendidos`
-    : 'Bienvenidos a Periféricos de PC';
+export function CatalogView({
+  products,
+  basePath,
+  categoryFilterEnabled,
+  emptyDescription,
+  heading,
+  searchEmptyDescription,
+  state,
+  supportingText,
+}: CatalogViewProps) {
+  const hasActiveSearch = state.query.trim().length > 0;
 
   return (
     <section className="flex flex-col gap-6 sm:gap-8">
       <div className="surface-card brand-tint-panel overflow-hidden rounded-3xl border-slate-200/80 px-5 py-8 sm:px-8 sm:py-10">
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-3 text-center">
           <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            {title}
+            {heading}
           </h1>
-          {!categoryId ? (
+          {supportingText ? (
             <p className="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-              Descubrí nuestro catálogo completo de periféricos.
+              {supportingText}
             </p>
           ) : null}
-          {products.length > 0 ? (
-            <p className="text-sm font-medium text-slate-500">
-              {products.length} producto{products.length === 1 ? '' : 's'} disponibles
-            </p>
-          ) : null}
+          <p className="text-sm font-medium text-slate-500">
+            {state.resultCount} producto{state.resultCount === 1 ? '' : 's'} disponibles
+          </p>
         </div>
       </div>
 
+      <CatalogControls
+        basePath={basePath}
+        categoryFilterEnabled={categoryFilterEnabled}
+        state={state}
+      />
+
       {products.length === 0 ? (
         <PageState
-          title="No hay productos disponibles"
-          description="Todavía no encontramos productos para esta categoría."
+          title={hasActiveSearch ? 'No encontramos productos para esa búsqueda' : 'No hay productos disponibles'}
+          description={hasActiveSearch ? searchEmptyDescription || emptyDescription : emptyDescription}
         />
       ) : null}
 
       {products.length > 0 ? (
-        <ProductGrid products={products} />
+        <>
+          {hasActiveSearch ? (
+            <p className="text-sm font-medium text-slate-500">
+              Mostrando resultados para{' '}
+              <span className="font-semibold text-slate-700">&ldquo;{state.query}&rdquo;</span>.
+            </p>
+          ) : null}
+          <ProductGrid products={products} />
+        </>
       ) : null}
     </section>
   );

@@ -1,19 +1,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
+import { CATEGORY_LABELS } from '@/lib/catalog-taxonomy';
 import { ProductDetailActions } from '@/features/product-detail/product-detail-actions';
-import type { Product } from '@/types';
+import type { ProductDetailDTO } from '@/types';
 
 interface ProductDetailViewProps {
-  product: Product;
+  product: ProductDetailDTO;
 }
-
-const categoryLabels: Record<Product['categoryId'], string> = {
-  monitores: 'Monitores',
-  teclados: 'Teclados',
-  mouses: 'Mouses',
-  auriculares: 'Auriculares',
-};
 
 const currencyFormatter = new Intl.NumberFormat('es-AR');
 const PRODUCT_DETAIL_IMAGE_WIDTH = 900;
@@ -39,7 +33,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
         <div className="surface-card brand-tint-panel overflow-hidden rounded-3xl border-slate-200/80">
           <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6">
             <span className="brand-badge inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em]">
-              {categoryLabels[product.categoryId]}
+              {CATEGORY_LABELS[product.categoryId]}
             </span>
             <span className="text-sm font-medium text-slate-500">
               {product.qtySold} vendidos

@@ -9,17 +9,19 @@ import {
   type PropsWithChildren,
 } from 'react';
 
-import type { CartItem, CartState, Product } from '@/types';
+import type { CartLineDTO, CartLineInput, CartState } from '@/types';
 
 type CartAction =
   | { type: 'HYDRATE'; payload: CartState }
-  | { type: 'ADD_ITEM'; payload: { product: Product; quantity: number } }
+  | { type: 'ADD_ITEM'; payload: { product: CartLineInput; quantity: number } }
+  | { type: 'SET_ITEM_QUANTITY'; payload: { productId: string; quantity: number } }
   | { type: 'REMOVE_ITEM'; payload: { productId: string } }
   | { type: 'CLEAR_CART' };
 
 interface CartContextValue {
   cart: CartState;
-  addItem: (product: Product, quantity?: number) => void;
+  addItem: (product: CartLineInput, quantity?: number) => void;
+  setItemQuantity: (productId: string, quantity: number) => void;
   removeItem: (productId: string) => void;
   clearCart: () => void;
   getTotalItems: () => number;
@@ -40,22 +42,53 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
       );
 
       if (existingItem) {
+        const nextQuantity = Math.min(
+          existingItem.quantity + action.payload.quantity,
+          action.payload.product.stock,
+        );
+
+        if (nextQuantity === existingItem.quantity) {
+          return state;
+        }
+
         return {
           items: state.items.map((item) =>
             item.id === action.payload.product.id
-              ? { ...item, quantity: item.quantity + action.payload.quantity }
+              ? { ...item, quantity: nextQuantity }
               : item,
           ),
         };
       }
 
+      const nextQuantity = Math.min(action.payload.quantity, action.payload.product.stock);
+
+      if (nextQuantity <= 0) {
+        return state;
+      }
+
       return {
         items: [
           ...state.items,
-          { ...action.payload.product, quantity: action.payload.quantity },
+          { ...action.payload.product, quantity: nextQuantity },
         ],
       };
     }
+    case 'SET_ITEM_QUANTITY':
+      return {
+        items: state.items.flatMap((item) => {
+          if (item.id !== action.payload.productId) {
+            return [item];
+          }
+
+          const nextQuantity = Math.min(Math.max(action.payload.quantity, 0), item.stock);
+
+          if (nextQuantity <= 0) {
+            return [];
+          }
+
+          return [{ ...item, quantity: nextQuantity }];
+        }),
+      };
     case 'REMOVE_ITEM':
       return {
         items: state.items.filter((item) => item.id !== action.payload.productId),
@@ -99,7 +132,7 @@ export function CartProvider({ children }: PropsWithChildren) {
   const value = useMemo<CartContextValue>(
     () => ({
       cart,
-      addItem: (product: Product, quantity = 1) => {
+      addItem: (product: CartLineInput, quantity = 1) => {
         if (quantity <= 0) {
           return;
         }
@@ -108,6 +141,9 @@ export function CartProvider({ children }: PropsWithChildren) {
       },
       removeItem: (productId: string) => {
         dispatch({ type: 'REMOVE_ITEM', payload: { productId } });
+      },
+      setItemQuantity: (productId: string, quantity: number) => {
+        dispatch({ type: 'SET_ITEM_QUANTITY', payload: { productId, quantity } });
       },
       clearCart: () => {
         dispatch({ type: 'CLEAR_CART' });
@@ -138,6 +174,6 @@ export function useCart() {
   return context;
 }
 
-export function getCartLineTotal(item: CartItem) {
+export function getCartLineTotal(item: CartLineDTO) {
   return item.price * item.quantity;
 }

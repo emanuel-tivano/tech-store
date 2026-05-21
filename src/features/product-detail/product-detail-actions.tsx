@@ -3,10 +3,11 @@
 import { useState } from 'react';
 
 import { useCart } from '@/context/cart-context';
-import type { Product } from '@/types';
+import { mapProductDetailToCartLineInput } from '@/lib/cart-line';
+import type { ProductDetailDTO } from '@/types';
 
 interface ProductDetailActionsProps {
-  product: Product;
+  product: ProductDetailDTO;
 }
 
 export function ProductDetailActions({ product }: ProductDetailActionsProps) {
@@ -57,7 +58,7 @@ export function ProductDetailActions({ product }: ProductDetailActionsProps) {
             type="button"
             className="btn-primary min-h-12 flex-1 sm:flex-none sm:px-6"
             disabled={isOutOfStock}
-            onClick={() => addItem(product, quantity)}
+            onClick={() => addItem(mapProductDetailToCartLineInput(product), quantity)}
           >
             {isOutOfStock ? 'Sin stock disponible' : 'Agregar al carrito'}
           </button>

@@ -4,14 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { useCart } from '@/context/cart-context';
-import type { Category } from '@/types';
-
-const categories: Array<{ href: `/category/${Category}`; label: string }> = [
-  { href: '/category/monitores', label: 'Monitores' },
-  { href: '/category/teclados', label: 'Teclados' },
-  { href: '/category/mouses', label: 'Mouses' },
-  { href: '/category/auriculares', label: 'Auriculares' },
-];
+import { CATEGORY_NAV_ITEMS } from '@/lib/catalog-taxonomy';
 
 function getLinkClassName(pathname: string, href: string) {
   const isActive = pathname === href;
@@ -135,7 +128,7 @@ export function SiteHeader() {
                   </Link>
                 </li>
 
-                {categories.map((category) => (
+                {CATEGORY_NAV_ITEMS.map((category) => (
                   <li
                     key={category.href}
                     className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm hover:border-white/[0.22] hover:bg-white/[0.14] hover:text-white'

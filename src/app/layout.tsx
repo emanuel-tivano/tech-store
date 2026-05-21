@@ -2,6 +2,7 @@ import '@/styles/globals.css';
 
 import type { Metadata } from 'next';
 
+import { JsonLd } from '@/components/json-ld';
 import { SiteHeader } from '@/components/site-header';
 import { getMetadataBase, storefrontMetadata } from '@/lib/metadata';
 
@@ -38,9 +39,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Store',
+    name: storefrontMetadata.siteName,
+    url: storefrontMetadata.siteUrl,
+    description: storefrontMetadata.defaultDescription,
+    logo: storefrontMetadata.logoUrl,
+    inLanguage: 'es-AR',
+  };
+
   return (
     <html lang="es">
       <body>
+        <JsonLd data={organizationJsonLd} />
         <Providers>
           <div className="min-h-screen bg-slate-100">
             <SiteHeader />

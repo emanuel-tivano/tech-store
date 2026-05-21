@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 const DEFAULT_SITE_URL = 'https://tech-store.example.com';
 const SITE_NAME = 'Perifericos de PC';
 const DEFAULT_DESCRIPTION =
-  'Storefront de perifericos con catalogo de monitores, teclados, mouses y auriculares.';
+  'Tienda online de periféricos para PC con monitores, teclados, mouses y auriculares para gaming, trabajo y setups profesionales.';
+const SITE_LOGO_PATH = '/icons/LogoIcon.svg';
 
 function normalizeSiteUrl(value: string): string {
   const trimmedValue = value.trim();
@@ -53,6 +54,10 @@ export function toAbsoluteImageUrl(imageUrl: string): string {
   const normalizedPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
 
   return new URL(normalizedPath, getMetadataBase()).toString();
+}
+
+export function getSiteLogoUrl(): string {
+  return toAbsoluteImageUrl(SITE_LOGO_PATH);
 }
 
 export function buildStorefrontMetadata({
@@ -125,4 +130,6 @@ export function buildMissingMetadata({
 export const storefrontMetadata = {
   siteName: SITE_NAME,
   defaultDescription: DEFAULT_DESCRIPTION,
+  siteUrl: getSiteUrl(),
+  logoUrl: getSiteLogoUrl(),
 };
