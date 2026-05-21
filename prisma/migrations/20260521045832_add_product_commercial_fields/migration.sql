@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "categories" ADD COLUMN     "freeShipment" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "opinions" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "qtySold" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "rating" DECIMAL(2,1) NOT NULL DEFAULT 0;

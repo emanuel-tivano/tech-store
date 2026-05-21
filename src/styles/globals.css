@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --brand-50: #e6f0ff;
+  --brand-100: #d9e8ff;
+  --brand-500: #0066ff;
+  --brand-600: #0052cc;
+  --brand-700: #003d99;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-100 text-slate-950 antialiased;
+  }
+
+  a,
+  button,
+  input {
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  summary:focus-visible {
+    outline: 3px solid rgb(from var(--brand-500) r g b / 0.35);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .surface-card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-70;
+    background-color: var(--brand-500);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--brand-600);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-slate-400 hover:bg-slate-50;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:border-red-400 hover:bg-red-50;
+  }
+
+  .btn-link {
+    @apply inline-flex items-center justify-center text-sm font-medium;
+    color: var(--brand-500);
+  }
+
+  .btn-link:hover {
+    color: var(--brand-600);
+  }
+
+  .btn-light {
+    @apply inline-flex items-center justify-center rounded-lg border border-white/20 bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-100;
+  }
+
+  .btn-light-outline {
+    @apply inline-flex items-center justify-center rounded-lg border border-white/60 px-4 py-2 text-sm font-medium text-white hover:bg-white/10;
+  }
+
+  .input-base {
+    @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 shadow-xs placeholder:text-slate-400 focus:outline-none;
+  }
+
+  .input-base:focus {
+    border-color: var(--brand-500);
+  }
+
+  .form-label {
+    @apply mb-1.5 block text-sm font-medium text-slate-800;
+  }
+
+  .status-panel {
+    @apply rounded-xl border border-slate-200 bg-white px-6 py-5 text-center shadow-sm;
+  }
+
+  .status-panel-danger {
+    @apply border-red-200 bg-red-50;
+  }
+
+  .faq-item {
+    @apply overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .faq-summary {
+    @apply cursor-pointer list-none px-4 py-3 text-left text-sm font-medium text-slate-900;
+  }
+
+  .faq-body {
+    @apply border-t border-slate-200 px-4 py-3 text-sm text-slate-600;
+  }
+
+  .brand-header {
+    background: linear-gradient(
+      90deg,
+      var(--brand-700) 0%,
+      var(--brand-600) 55%,
+      var(--brand-500) 100%
+    );
+  }
+
+  .brand-header-muted {
+    color: rgb(from var(--brand-100) r g b / 0.88);
+  }
+
+  .brand-tint-panel {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 56%, var(--brand-50) 100%);
+  }
+
+  .brand-success-panel {
+    background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 58%, var(--brand-50) 100%);
+  }
+
+  .brand-eyebrow {
+    color: var(--brand-600);
+  }
+
+  .brand-badge {
+    @apply text-white;
+    background-color: var(--brand-500);
+  }
+
+  .brand-highlight-panel {
+    @apply text-white;
+    border-color: var(--brand-600);
+    background-color: var(--brand-500);
+  }
+
+  .brand-badge-subtle {
+    color: var(--brand-700);
+    background-color: var(--brand-50);
+  }
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08);
+}
+
+.product-card-image {
+  height: 240px;
+}
+
+.product-detail-image {
+  max-height: 460px;
+}
+
+.faq-summary::-webkit-details-marker {
+  display: none;
+}
