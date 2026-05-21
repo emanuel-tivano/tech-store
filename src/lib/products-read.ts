@@ -1,12 +1,19 @@
 import 'server-only';
 
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+
 import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import type { Category, Product } from '@/types';
 
+const FALLBACK_PRODUCT_IMAGE = '/icons/LogoIcon.svg';
+const PRODUCT_IMAGE_DIRECTORY = path.join(process.cwd(), 'public', 'products');
+
 const productListSelect = {
   id: true,
+  slug: true,
   name: true,
   price: true,
   rating: true,
@@ -35,13 +42,30 @@ type ProductDetailRecord = Prisma.ProductGetPayload<{
   select: typeof productDetailSelect;
 }>;
 
+function normalizeImageUrl(imageUrl: string): string {
+  return imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+}
+
+function resolveProductImage(imageUrl: string | null, slug: string): string {
+  const normalizedImageUrl = imageUrl?.trim() ? normalizeImageUrl(imageUrl.trim()) : '';
+
+  if (normalizedImageUrl && normalizedImageUrl !== FALLBACK_PRODUCT_IMAGE) {
+    return normalizedImageUrl;
+  }
+
+  const derivedImageUrl = `/products/${slug}.webp`;
+  const derivedImagePath = path.join(PRODUCT_IMAGE_DIRECTORY, `${slug}.webp`);
+
+  return existsSync(derivedImagePath) ? derivedImageUrl : FALLBACK_PRODUCT_IMAGE;
+}
+
 function mapProductList(record: ProductListRecord, categoryId: Category): Product {
   return {
     id: record.id,
     title: record.name,
     description: '',
     categoryId,
-    image: record.imageUrl ?? '',
+    image: resolveProductImage(record.imageUrl, record.slug),
     price: Number(record.price),
     rating: Number(record.rating),
     opinions: record.opinions,

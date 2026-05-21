@@ -13,9 +13,22 @@ const { prismaMock } = vi.hoisted(() => ({
   },
 }));
 
+const { existsSyncMock } = vi.hoisted(() => ({
+  existsSyncMock: vi.fn(),
+}));
+
 vi.mock('next/cache', () => ({
   unstable_cache: <T extends (...args: readonly unknown[]) => unknown>(callback: T) => callback,
 }));
+
+vi.mock('node:fs', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:fs')>();
+
+  return {
+    ...actual,
+    existsSync: existsSyncMock,
+  };
+});
 
 vi.mock('@/lib/prisma', () => ({
   prisma: prismaMock,
@@ -32,12 +45,15 @@ import { readCategories, readCategoryBySlug } from '@/lib/categories-read';
 describe('catalog readers', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    existsSyncMock.mockReturnValue(false);
   });
 
   it('mapea el listado de productos desde Prisma al tipo de catálogo', async () => {
+    existsSyncMock.mockReturnValue(true);
     prismaMock.product.findMany.mockResolvedValue([
       {
         id: 'prod-1',
+        slug: 'samsung-odyssey-g5-27',
         name: 'Teclado TKL',
         price: new Number('2499.90'),
         rating: new Number('4.8'),
@@ -61,6 +77,7 @@ describe('catalog readers', () => {
       },
       select: {
         id: true,
+        slug: true,
         name: true,
         price: true,
         rating: true,
@@ -84,7 +101,7 @@ describe('catalog readers', () => {
         title: 'Teclado TKL',
         description: '',
         categoryId: 'teclados',
-        image: '',
+        image: '/products/samsung-odyssey-g5-27.webp',
         price: 2499.9,
         rating: 4.8,
         opinions: 32,
@@ -100,6 +117,7 @@ describe('catalog readers', () => {
       .mockResolvedValueOnce([
         {
           id: 'prod-2',
+          slug: 'mouse-pro',
           name: 'Mouse Pro',
           price: 1499,
           rating: 4.6,
@@ -135,6 +153,7 @@ describe('catalog readers', () => {
     prismaMock.product.findFirst
       .mockResolvedValueOnce({
         id: 'prod-3',
+        slug: 'monitor-ultrawide',
         name: 'Monitor UltraWide',
         description: 'Panel IPS de 34 pulgadas',
         price: 9999,
@@ -164,6 +183,41 @@ describe('catalog readers', () => {
       freeShipment: true,
     });
     await expect(readProductById('missing')).resolves.toBeNull();
+  });
+
+  it('usa la imagen derivada del slug cuando Prisma devuelve el placeholder generico', async () => {
+    existsSyncMock.mockReturnValue(true);
+    prismaMock.product.findMany.mockResolvedValue([
+      {
+        id: 'prod-4',
+        slug: 'keychron-k8-pro',
+        name: 'Keychron K8 Pro',
+        price: 1999,
+        rating: 4.7,
+        opinions: 18,
+        qtySold: 9,
+        imageUrl: '/icons/LogoIcon.svg',
+        category: {
+          slug: 'teclados',
+        },
+      },
+    ]);
+
+    await expect(readProducts()).resolves.toEqual([
+      {
+        id: 'prod-4',
+        title: 'Keychron K8 Pro',
+        description: '',
+        categoryId: 'teclados',
+        image: '/products/keychron-k8-pro.webp',
+        price: 1999,
+        rating: 4.7,
+        opinions: 18,
+        qtySold: 9,
+        stock: 0,
+        freeShipment: false,
+      },
+    ]);
   });
 
   it('mapea categorías y metadatos por slug', async () => {

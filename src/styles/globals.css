@@ -107,9 +107,9 @@
 
   .brand-header {
     background: linear-gradient(
-      90deg,
-      var(--brand-700) 0%,
-      var(--brand-600) 55%,
+      180deg,
+      #0f3f88 0%,
+      #0a4fb6 48%,
       var(--brand-500) 100%
     );
   }
@@ -132,7 +132,12 @@
 
   .brand-badge {
     @apply text-white;
-    background-color: var(--brand-500);
+    background-color: var(--brand-600);
+  }
+
+  .brand-badge-cart {
+    @apply text-white;
+    background-color: rgb(200, 20, 20) ;
   }
 
   .brand-highlight-panel {
