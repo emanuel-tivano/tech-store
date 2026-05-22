@@ -11,6 +11,7 @@ import {
   type PropsWithChildren,
 } from 'react';
 
+import { getRemainingProductStock } from '@/lib/cart-stock';
 import type { CartLineDTO, CartLineInput, CartState } from '@/types';
 
 type CartAction =
@@ -28,6 +29,7 @@ interface CartContextValue {
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  getItemQuantity: (productId: string) => number;
   isInCart: (productId: string) => boolean;
 }
 
@@ -44,12 +46,17 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
       );
 
       if (existingItem) {
-        const nextQuantity = Math.min(
-          existingItem.quantity + action.payload.quantity,
-          action.payload.product.stock,
-        );
+        const nextQuantity =
+          existingItem.quantity +
+          Math.min(
+            action.payload.quantity,
+            getRemainingProductStock(
+              action.payload.product.stock,
+              existingItem.quantity,
+            ),
+          );
 
-        if (nextQuantity === existingItem.quantity) {
+        if (nextQuantity <= existingItem.quantity) {
           return state;
         }
 
@@ -163,6 +170,8 @@ export function CartProvider({ children }: PropsWithChildren) {
           (total, item) => total + item.price * item.quantity,
           0,
         ),
+      getItemQuantity: (productId: string) =>
+        cart.items.find((item) => item.id === productId)?.quantity ?? 0,
       isInCart: (productId: string) =>
         cart.items.some((item) => item.id === productId),
     }),

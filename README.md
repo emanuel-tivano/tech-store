@@ -1,144 +1,204 @@
 # Periféricos de PC
 
-Full-stack e-commerce storefront built with Next.js App Router, Prisma, Neon PostgreSQL, and Tailwind CSS.
+Portfolio e-commerce storefront built with Next.js App Router, Prisma, Neon PostgreSQL, and Tailwind CSS.  
+The project focuses on a realistic browsing, cart, and checkout flow for a small product catalog, with honest product constraints and technical SEO in place.
 
-## Stack
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![React](https://img.shields.io/badge/React-19-149eca)
+![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178c6)
+![Prisma](https://img.shields.io/badge/Prisma-7-2d3748)
+![Tests](https://img.shields.io/badge/Tests-Vitest%20%2B%20RTL%20%2B%20Playwright-6e9f18)
+![Status](https://img.shields.io/badge/Build-Passing-2ea44f)
 
-- Next.js 15 App Router
-- React 19
-- TypeScript 5 in strict mode
-- Tailwind CSS 4
-- Prisma 7
-- Neon PostgreSQL
-- Server Components
-- Server Actions
+**Primary stack**
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Prisma + Neon PostgreSQL
 - Zod
 - Vitest + Testing Library
+- Playwright (smoke E2E)
 
-## Architecture
+**Demo**
 
-- Reads use Server Components and server-only Prisma readers from `src/lib`.
-- Writes use typed Server Actions, with validation and persistence handled on the server.
-- Prisma is the data access layer for products, categories, and orders.
-- PostgreSQL stores the catalog, inventory, and order data model.
-- Tailwind CSS powers the storefront UI and shared visual patterns.
+- Deploy: `add-your-production-url-here`
 
-## Project Structure
+## Screenshots
 
-```text
-src/
-  app/        App Router pages and layouts
-  components/ Shared UI components
-  context/    Client-side cart state
-  features/   Feature-scoped UI and actions
-  lib/        Prisma, readers, validation, metadata
-  styles/     Global Tailwind styles
-  test/       Vitest test suite
-  types/      Shared TypeScript types
+Replace these placeholders with real screenshots before publishing the repository:
 
-prisma/
-  migrations/ Prisma migrations
-  schema.prisma
-  seed.ts
-```
+- `docs/screenshots/home.png` - Home
+- `docs/screenshots/catalog.png` - Catálogo
+- `docs/screenshots/pdp.png` - Product Detail Page
+- `docs/screenshots/cart.png` - Carrito
+- `docs/screenshots/checkout.png` - Checkout
 
-## Environment Variables
+## Features
 
-Create `.env.local` from `.env.local.example` and fill in:
+### User features
 
-- `DATABASE_URL`: Neon pooled connection string for the app and Prisma Client.
-- `DIRECT_URL`: Neon direct connection string for Prisma migrations and seeding.
-- `NEXT_PUBLIC_SITE_URL`: Public site URL used for metadata and canonical URLs.
+- Product catalog with search, filters, sorting, category navigation, and empty states
+- Product detail pages with clean slugs, related products, stock visibility, and purchase CTA
+- Editable cart with quantity controls, stock limits, and local persistence
+- Simulated checkout with contact, shipping, payment selection, summary, and order creation
+- Responsive storefront flow across mobile, tablet, and desktop layouts
 
-Production notes:
+### Technical features
 
-- On Vercel, set `DATABASE_URL` to the Neon pooled connection string.
-- Set `DIRECT_URL` to the direct Neon connection string for `prisma migrate deploy` and seeding workflows.
-- Set `NEXT_PUBLIC_SITE_URL` to the production domain, for example `https://your-store.vercel.app` or your custom domain.
-- If `NEXT_PUBLIC_SITE_URL` is not set, metadata falls back to Vercel-provided deployment URLs. The explicit production URL is still the recommended setting.
+- App Router pages with typed metadata and route-level SEO
+- Prisma-backed catalog and order persistence on PostgreSQL
+- Server-side stock validation and atomic stock decrement inside a transaction
+- Structured JSON-LD for website, breadcrumbs, organization, and product pages
+- Typed server actions and Zod validation for checkout writes
+- Test suite covering cart behavior, search helpers, checkout validation, and order creation
 
-## Local Setup
+## Technical highlights
 
-1. Install dependencies:
+### Next.js App Router
+
+The storefront uses App Router pages, layouts, server components, and server actions.  
+Catalog and product routes are shaped around route-level metadata, SEO, and server-side data reads instead of a purely client-driven storefront.
+
+### Prisma + Neon
+
+Prisma is the data access layer for categories, products, inventory, and orders.  
+Neon PostgreSQL stores the catalog and order model, while Prisma migrations keep schema changes explicit and reviewable.
+
+### Cart persistence
+
+Cart state lives client-side and persists to `localStorage`, with guarded hydration to avoid overwriting an existing cart on first mount.
+
+### Checkout validation
+
+Checkout input is validated in the UI and validated again on the server through Zod before persistence.  
+This keeps the form realistic without pretending to be a real payment integration.
+
+### SEO técnico
+
+The project includes canonical URLs, sitemap, robots rules, metadata per page, slug-based product routes, and route-aware Open Graph data.
+
+### JSON-LD
+
+Structured data is included for:
+
+- `WebSite`
+- `Store`
+- `BreadcrumbList`
+- `Product`
+
+### Tests
+
+Vitest and Testing Library cover cart reducer logic, cart persistence hydration, catalog search helpers, checkout validation, order creation, and route fallbacks. A minimal Playwright smoke test covers the main storefront path from catalog to checkout.
+
+### Stock transaction
+
+Orders reload authoritative prices and stock from PostgreSQL, then decrement stock inside a Prisma transaction.  
+This is one of the most important integrity guarantees in the project.
+
+### Responsive UI
+
+The storefront is designed as a responsive purchase flow rather than a static landing page: header search, grid behavior, PDP, cart, and checkout all adapt to smaller breakpoints.
+
+## Architecture and decisions
+
+### Why the checkout is simulated
+
+This project is meant to demonstrate a credible commerce flow without faking a real payment gateway.  
+The checkout persists buyer, shipping, and payment selection data, but does not process real charges.
+
+### Why there is no authentication
+
+Authentication was intentionally excluded to keep the scope centered on storefront fundamentals: catalog browsing, cart behavior, checkout UX, inventory consistency, and technical SEO.
+
+### Why some routes remain `force-dynamic`
+
+Home, category, product, and sitemap routes still rely on live Prisma reads in the current setup.  
+That decision keeps the implementation predictable for this portfolio version, at the cost of a more advanced cache and revalidation strategy that can be added later.
+
+### Current tradeoffs
+
+- The checkout is realistic, but not a real commerce integration
+- The data model is clean, but there is no admin back office
+- Rendering is stable, but caching and revalidation are still conservative
+
+## Scope / non-goals
+
+Deliberately out of scope for this version:
+
+- Real payment gateway
+- Real shipping/logistics integration
+- Real transactional emails
+- Customer authentication and account area
+- Admin panel / CMS
+- Order history UI
+
+## SEO
+
+Implemented SEO work includes:
+
+- `sitemap.xml`
+- `robots.txt`
+- Canonical URLs
+- Per-page metadata
+- Open Graph fields
+- JSON-LD
+- Product slug routes under `/products/[slug]`
+
+Cart and checkout are explicitly marked as non-indexable through metadata, not only robots rules.
+
+## Testing
+
+Pre-ship verification for the current repo:
 
 ```bash
-npm install
-```
-
-2. Create the local env file:
-
-```bash
-cp .env.local.example .env.local
-```
-
-3. Run Prisma migrations:
-
-```bash
-npx prisma migrate dev
-```
-
-4. Seed the database:
-
-```bash
-npm run db:seed
-```
-
-5. Start the development server:
-
-```bash
-npm run dev
-```
-
-## Scripts
-
-- `npm run dev`: start the local Next.js dev server
-- `npm run build`: create a production build
-- `npm run start`: run the production server
-- `npm run lint`: run ESLint
-- `npm test`: run the Vitest suite
-- `npm run db:seed`: seed categories and products
-
-## Vercel Deployment
-
-Recommended deployment setup:
-
-1. Create a Neon project and capture both the pooled and direct connection strings.
-2. In the Vercel project settings, configure:
-   - `DATABASE_URL`
-   - `DIRECT_URL`
-   - `NEXT_PUBLIC_SITE_URL`
-3. Apply schema changes with Prisma using the direct connection:
-
-```bash
-npx prisma migrate deploy
-```
-
-4. Seed only when needed for a fresh environment:
-
-```bash
-npm run db:seed
-```
-
-Operational notes:
-
-- The application runtime reads through Prisma using `DATABASE_URL`.
-- Prisma migrations should use `DIRECT_URL`, not the pooled URL.
-- After changing environment variables in Vercel, trigger a new deployment.
-- `next.config.ts` does not require special Vercel-only flags for the current architecture.
-
-## Verification
-
-Typical pre-deploy verification:
-
-```bash
-npm test
-npx tsc --noEmit
 npm run lint
+npm test
 npm run build
 ```
 
-## Notes
+E2E smoke:
 
-- Checkout order creation runs on the server and reloads authoritative product prices from PostgreSQL.
-- Inventory validation and stock decrement happen inside a Prisma transaction.
-- Product and category routes use real App Router 404 behavior for missing resources.
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+Current coverage focus:
+
+- Cart reducer and cart hydration
+- Catalog search helpers
+- Checkout validation
+- Order creation flow
+- Not-found route behavior
+- Main ecommerce smoke flow: home/catalog -> PDP -> cart -> checkout
+
+## Local setup
+
+```bash
+npm install
+cp .env.local.example .env.local
+npx prisma migrate dev
+npm run db:seed
+npm run dev
+```
+
+To run the smoke E2E locally after setup:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+Required environment variables:
+
+- `DATABASE_URL`
+- `DIRECT_URL`
+- `NEXT_PUBLIC_SITE_URL`
+
+## Future improvements
+
+- Introduce cache and revalidation strategy for catalog and SEO routes
+- Expand end-to-end coverage beyond the initial storefront smoke flow
+- Add authentication and order history
+- Add a lightweight admin workflow for catalog/order management

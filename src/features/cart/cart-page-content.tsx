@@ -94,7 +94,11 @@ export function CartPageContent() {
             const imageSrc = item.image || FALLBACK_PRODUCT_IMAGE;
 
             return (
-              <article key={item.id} className="surface-card overflow-hidden rounded-3xl border-slate-200/80">
+              <article
+                key={item.id}
+                className="surface-card overflow-hidden rounded-3xl border-slate-200/80"
+                data-testid="cart-line-item"
+              >
                 <div className="flex flex-col gap-5 p-4 sm:p-5 lg:flex-row lg:items-center">
                   <div className="flex min-h-32 items-center justify-center rounded-2xl bg-slate-50 p-4 lg:w-36 lg:flex-none">
                     <Image
