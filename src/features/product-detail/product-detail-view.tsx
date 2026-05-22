@@ -18,7 +18,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   const imageSrc = product.image || FALLBACK_PRODUCT_IMAGE;
 
   return (
-    <section className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)] lg:gap-8">
+    <section className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)] lg:gap-8">
       <div className="lg:col-span-2">
         <Link
           href={product.categoryId ? `/category/${product.categoryId}` : '/'}
@@ -31,7 +31,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
 
       <div className="space-y-4">
         <div className="surface-card brand-tint-panel overflow-hidden rounded-3xl border-slate-200/80">
-          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-4 sm:px-6">
             <span className="brand-badge inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em]">
               {CATEGORY_LABELS[product.categoryId]}
             </span>
@@ -40,7 +40,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
             </span>
           </div>
 
-          <div className="flex min-h-[320px] items-center justify-center p-6 sm:min-h-[420px] sm:p-10">
+          <div className="flex min-h-[280px] items-center justify-center p-4 sm:min-h-[420px] sm:p-10">
             <Image
               src={imageSrc}
               alt={product.title}
@@ -53,7 +53,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-3">
           <div className="surface-card rounded-2xl border-slate-200/80 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
               Valoración
@@ -96,13 +96,13 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
 
       <div>
         <div className="surface-card rounded-3xl border-slate-200/80">
-          <div className="flex flex-col gap-6 p-5 sm:p-7">
+          <div className="flex flex-col gap-6 p-4 sm:p-7">
             <div className="space-y-4">
               <div className="space-y-3">
                 <p className="brand-eyebrow text-xs font-semibold uppercase tracking-[0.22em]">
                   Detalle del producto
                 </p>
-                <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+                <h1 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
                   {product.title}
                 </h1>
                 <p className="text-base leading-7 text-slate-600">{product.description}</p>
@@ -112,9 +112,9 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                   Precio final
                 </p>
-                <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
+                <div className="mt-2 flex flex-col gap-4 min-[430px]:flex-row min-[430px]:items-end min-[430px]:justify-between">
                   <div>
-                    <p className="text-4xl font-semibold tracking-tight text-slate-950">
+                    <p className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
                       $ {currencyFormatter.format(product.price)}
                     </p>
                     <p className="mt-2 text-sm text-slate-500">
@@ -133,7 +133,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
                 </div>
               </div>
 
-              <div className="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+              <div className="grid gap-3 text-sm text-slate-600 md:grid-cols-2">
                 <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-3">
                   <p className="font-semibold text-emerald-800">
                     {product.freeShipment ? 'Incluye envío gratis' : 'Envío a coordinar'}

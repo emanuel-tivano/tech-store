@@ -26,14 +26,14 @@ export function SiteHeader() {
 
   return (
     <header className='brand-header border-b border-slate-200/70 shadow-md shadow-slate-950/5'>
-      <div className='mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-6 lg:px-8'>
-        <div className='flex flex-col gap-3 py-3 sm:gap-3 sm:py-3'>
-          <div className='grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center'>
-            <div className='flex min-w-0 items-center gap-1'>
+      <div className='mx-auto flex w-full max-w-6xl flex-col px-3 sm:px-6 lg:px-8'>
+        <div className='flex flex-col gap-3 py-3'>
+          <div className='grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 lg:grid-cols-[minmax(0,auto)_minmax(0,1fr)_auto]'>
+            <div className='flex min-w-0 items-center gap-2'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
-                width='30'
-                height='30'
+                width='28'
+                height='28'
                 viewBox='0 0 24 24'
                 fill='none'
                 stroke='white'
@@ -51,28 +51,28 @@ export function SiteHeader() {
               <div className='min-w-0'>
                 <Link
                   href='/'
-                  className='inline-flex text-xl font-semibold tracking-[-0.02em] text-white no-underline sm:text-2xl pe-3.5'
+                  className='inline-flex max-w-full text-lg font-semibold tracking-[-0.02em] text-white no-underline sm:text-2xl'
                 >
-                  Periféricos de PC
+                  <span className='truncate'>Periféricos de PC</span>
                 </Link>
               </div>
             </div>
 
-            <div className='order-3 lg:order-2'>
+            <div className='order-3 col-span-2 min-w-0 lg:order-2 lg:col-span-1'>
               <Suspense fallback={<HeaderSearchFallback />}>
                 <HeaderSearch />
               </Suspense>
             </div>
 
-            <div className='order-2 flex flex-wrap items-center gap-2 sm:justify-end lg:order-3'>
+            <div className='order-2 grid grid-cols-2 gap-2 justify-self-end lg:order-3'>
               <Link
                 href='/help'
-                className='inline-flex items-center justify-center gap-1 px-3.5 py-2 font-medium text-white/[0.88]'
+                className='inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-white/[0.15] bg-white/[0.08] px-3 py-2 text-sm font-medium text-white/[0.92] backdrop-blur-sm'
               >
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
-                  width='26'
-                  height='26'
+                  width='22'
+                  height='22'
                   viewBox='0 0 24 24'
                   fill='none'
                   stroke='currentColor'
@@ -89,7 +89,7 @@ export function SiteHeader() {
               </Link>
               <Link
                 href='/cart'
-                className='relative flex items-center justify-center gap-2 px-3.5 py-2 font-medium text-white/[0.88]'
+                className='relative inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.15] bg-white/[0.08] px-3 py-2 text-sm font-medium text-white/[0.92] backdrop-blur-sm'
                 aria-label={`Ir al carrito con ${totalItems} productos`}
               >
                 <span className='relative inline-flex h-6 w-6 shrink-0 items-center justify-center'>
@@ -127,9 +127,9 @@ export function SiteHeader() {
             </div>
           </div>
 
-          <div className='flex items-center justify-center '>
-            <nav aria-label='Categorías' className='overflow-x-auto px-2'>
-              <ul className='flex min-w-max items-center gap-1.5 sm:min-w-0 sm:flex-wrap'>
+          <div className='flex items-center'>
+            <nav aria-label='Categorías' className='w-full overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
+              <ul className='flex min-w-max items-center gap-1.5 pr-3 sm:min-w-0 sm:flex-wrap sm:justify-center'>
                 <li className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm hover:border-white/[0.22] hover:bg-white/[0.14] hover:text-white'>
                   <Link href='/' className={getLinkClassName(pathname, '/')}>
                     Inicio
@@ -162,11 +162,11 @@ function HeaderSearchFallback() {
   return (
     <div
       aria-hidden='true'
-      className='flex min-h-12 items-center overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.08),0_8px_24px_rgba(15,23,42,0.08)]'
+      className='flex min-h-11 items-center overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.08),0_8px_24px_rgba(15,23,42,0.08)]'
     >
-      <div className='min-h-12 flex-1 bg-white' />
+      <div className='min-h-11 flex-1 bg-white' />
       <div className='h-6 w-px bg-slate-200' />
-      <div className='h-12 w-12 bg-white' />
+      <div className='h-11 w-11 bg-white' />
     </div>
   );
 }

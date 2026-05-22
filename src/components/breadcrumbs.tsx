@@ -11,13 +11,16 @@ interface BreadcrumbsProps {
 
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
   return (
-    <nav aria-label="Breadcrumb" className="mb-4">
-      <ol className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+    <nav aria-label="Breadcrumb" className="mb-4 overflow-x-auto pb-1">
+      <ol className="flex min-w-max flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500 sm:min-w-0">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
 
           return (
-            <li key={`${item.label}-${index}`} className="inline-flex items-center gap-2">
+            <li
+              key={`${item.label}-${index}`}
+              className="inline-flex min-w-0 items-center gap-2"
+            >
               {item.href && !isLast ? (
                 <Link href={item.href} className="hover:text-slate-700 hover:underline">
                   {item.label}
@@ -25,7 +28,9 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
               ) : (
                 <span
                   aria-current={isLast ? 'page' : undefined}
-                  className={isLast ? 'font-medium text-slate-700' : undefined}
+                  className={
+                    isLast ? 'max-w-[16rem] truncate font-medium text-slate-700 sm:max-w-full' : undefined
+                  }
                 >
                   {item.label}
                 </span>

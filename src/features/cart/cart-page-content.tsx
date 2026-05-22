@@ -88,7 +88,7 @@ export function CartPageContent() {
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="grid gap-4">
+        <div className="order-2 grid gap-4 lg:order-1">
           {cart.items.map((item) => {
             const imageSrc = item.image || FALLBACK_PRODUCT_IMAGE;
 
@@ -118,15 +118,15 @@ export function CartPageContent() {
                         <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
                       </div>
 
-                      <div className="flex flex-wrap gap-3">
+                      <div className="grid gap-3 md:grid-cols-3">
                         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                             Cantidad
                           </p>
-                          <div className="mt-2 inline-flex items-center rounded-full border border-slate-200 bg-white">
+                          <div className="mt-2 inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white">
                             <button
                               type="button"
-                              className="px-3 py-2 text-sm font-semibold text-slate-700 disabled:text-slate-300"
+                              className="min-h-11 min-w-11 px-3 py-2 text-base font-semibold text-slate-700 disabled:text-slate-300"
                               aria-label={`Disminuir cantidad de ${item.title}`}
                               disabled={item.quantity <= 1}
                               onClick={() => {
@@ -137,14 +137,14 @@ export function CartPageContent() {
                               -
                             </button>
                             <span
-                              className="min-w-10 px-3 text-center text-sm font-semibold text-slate-950"
+                              className="min-w-11 px-3 text-center text-base font-semibold text-slate-950"
                               aria-live="polite"
                             >
                               {item.quantity}
                             </span>
                             <button
                               type="button"
-                              className="px-3 py-2 text-sm font-semibold text-slate-700 disabled:text-slate-300"
+                              className="min-h-11 min-w-11 px-3 py-2 text-base font-semibold text-slate-700 disabled:text-slate-300"
                               aria-label={`Aumentar cantidad de ${item.title}`}
                               disabled={item.quantity >= item.stock}
                               onClick={() => {
@@ -215,7 +215,7 @@ export function CartPageContent() {
           })}
         </div>
 
-        <aside className="surface-card rounded-3xl border-slate-200/80 lg:sticky lg:top-6">
+        <aside className="order-1 surface-card rounded-3xl border-slate-200/80 lg:order-2 lg:sticky lg:top-6">
           <div className="flex flex-col gap-5 p-5 sm:p-6">
             <div>
               <p className="brand-eyebrow text-xs font-semibold uppercase tracking-[0.22em]">

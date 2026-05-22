@@ -4,7 +4,7 @@ const DEFAULT_SITE_URL = 'https://tech-store.example.com';
 const SITE_NAME = 'Perifericos de PC';
 const DEFAULT_DESCRIPTION =
   'Tienda online de periféricos para PC con monitores, teclados, mouses y auriculares para gaming, trabajo y setups profesionales.';
-const SITE_LOGO_PATH = '/icons/LogoIcon.svg';
+const SITE_LOGO_PATH = '../app/favicon.png';
 
 function normalizeSiteUrl(value: string): string {
   const trimmedValue = value.trim();

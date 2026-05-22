@@ -41,7 +41,7 @@ export function TrustSignals({
           <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{title}</h2>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-2">
           {items.map((item) => (
             <div
               key={item.title}

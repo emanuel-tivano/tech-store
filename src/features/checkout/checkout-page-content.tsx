@@ -340,7 +340,7 @@ export function CheckoutPageContent() {
             </div>
           </div>
 
-          <ol className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <ol className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {steps.map((step, index) => {
               const styles = getStepStyles(step.status);
 
@@ -370,7 +370,7 @@ export function CheckoutPageContent() {
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,420px)]">
-        <div className="surface-card rounded-3xl border-slate-200/80">
+        <div className="order-2 surface-card rounded-3xl border-slate-200/80 lg:order-1">
           <div className="flex flex-col gap-6 p-5 sm:p-6 lg:p-8">
             <div className="flex flex-col gap-2">
               <p className="brand-eyebrow text-xs font-semibold uppercase tracking-[0.22em]">
@@ -634,6 +634,7 @@ export function CheckoutPageContent() {
                             value={option.value}
                             checked={values.deliveryMethod === option.value}
                             required
+                            className="mt-1 h-4 w-4 shrink-0 accent-[var(--brand-600)]"
                             aria-describedby={errors.deliveryMethod ? 'delivery-method-error' : undefined}
                             onChange={(event) =>
                               updateField('deliveryMethod', event.target.value as CheckoutFormValues['deliveryMethod'])
@@ -692,6 +693,7 @@ export function CheckoutPageContent() {
                             value={option.value}
                             checked={values.paymentMethod === option.value}
                             required
+                            className="mt-1 h-4 w-4 shrink-0 accent-[var(--brand-600)]"
                             aria-describedby={errors.paymentMethod ? 'payment-method-error' : undefined}
                             onChange={(event) =>
                               updateField('paymentMethod', event.target.value as CheckoutFormValues['paymentMethod'])
@@ -747,7 +749,7 @@ export function CheckoutPageContent() {
           </div>
         </div>
 
-        <aside className="surface-card rounded-3xl border-slate-200/80 lg:sticky lg:top-6">
+        <aside className="order-1 surface-card rounded-3xl border-slate-200/80 lg:order-2 lg:sticky lg:top-6">
           <div className="flex flex-col gap-5 p-5 sm:p-6">
             <div>
               <p className="brand-eyebrow text-xs font-semibold uppercase tracking-[0.22em]">
@@ -771,7 +773,7 @@ export function CheckoutPageContent() {
                       key={item.id}
                       className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
                     >
-                      <div className="flex items-start justify-between gap-4">
+                      <div className="flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-start min-[430px]:justify-between">
                         <div>
                           <p className="font-medium text-slate-950">{item.title}</p>
                           <p className="mt-1 text-sm text-slate-500">Cantidad: {item.quantity}</p>

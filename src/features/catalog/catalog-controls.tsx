@@ -34,9 +34,9 @@ export function CatalogControls({
         <form action={basePath} className="grid gap-4">
           <input type="hidden" name="q" value={state.query} />
 
-          <div className="grid gap-4 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {categoryFilterEnabled ? (
-              <div>
+              <div className="grid gap-1.5">
                 <label htmlFor="catalog-category" className="form-label">
                   Categoría
                 </label>
@@ -56,7 +56,7 @@ export function CatalogControls({
               </div>
             ) : null}
 
-            <div>
+            <div className="grid gap-1.5">
               <label htmlFor="catalog-sort" className="form-label">
                 Ordenar por
               </label>
@@ -74,7 +74,7 @@ export function CatalogControls({
               </select>
             </div>
 
-            <div>
+            <div className="grid gap-1.5">
               <label htmlFor="catalog-rating" className="form-label">
                 Rating mínimo
               </label>
@@ -92,7 +92,7 @@ export function CatalogControls({
               </select>
             </div>
 
-            <div>
+            <div className="grid gap-1.5">
               <label htmlFor="catalog-price" className="form-label">
                 Precio máximo
               </label>
@@ -109,33 +109,35 @@ export function CatalogControls({
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-wrap gap-3">
-              <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="inline-flex min-h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
                 <input
                   type="checkbox"
                   name="freeShipping"
                   value="1"
                   defaultChecked={state.freeShippingOnly}
+                  className="h-4 w-4 accent-[var(--brand-600)]"
                 />
                 Sólo envío gratis
               </label>
-              <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+              <label className="inline-flex min-h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
                 <input
                   type="checkbox"
                   name="inStock"
                   value="1"
                   defaultChecked={state.inStockOnly}
+                  className="h-4 w-4 accent-[var(--brand-600)]"
                 />
                 Sólo en stock
               </label>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <button type="submit" className="btn-primary">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button type="submit" className="btn-primary w-full sm:w-auto">
                 Aplicar filtros
               </button>
-              <a href={basePath} className="btn-secondary">
+              <a href={basePath} className="btn-secondary w-full sm:w-auto">
                 Limpiar
               </a>
             </div>

@@ -29,9 +29,9 @@ export function CatalogView({
 
   return (
     <section className="flex flex-col gap-6 sm:gap-8">
-      <div className="surface-card brand-tint-panel overflow-hidden rounded-3xl border-slate-200/80 px-5 py-8 sm:px-8 sm:py-10">
+      <div className="surface-card brand-tint-panel overflow-hidden rounded-3xl border-slate-200/80 px-4 py-7 sm:px-8 sm:py-10">
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-3 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
             {heading}
           </h1>
           {supportingText ? (

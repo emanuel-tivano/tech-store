@@ -34,7 +34,7 @@ export function HeaderSearch() {
       className='w-full lg:max-w-2xl'
       onSubmit={handleSubmit}
     >
-      <div className='flex min-h-10 items-center overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.08),0_8px_24px_rgba(15,23,42,0.08)] transition-shadow duration-200 focus-within:shadow-[0_0_0_3px_rgba(0,102,255,0.12),0_8px_24px_rgba(15,23,42,0.08)]'>
+      <div className='flex min-h-11 items-center overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.08),0_8px_24px_rgba(15,23,42,0.08)] transition-shadow duration-200 focus-within:shadow-[0_0_0_3px_rgba(0,102,255,0.12),0_8px_24px_rgba(15,23,42,0.08)]'>
         <label htmlFor='header-search' className='sr-only'>
           Buscar productos
         </label>
@@ -44,14 +44,14 @@ export function HeaderSearch() {
           type='search'
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder='Buscar productos, marcas y más...'
-          className='min-h-10 w-full min-w-0 border-0 bg-white px-4 py-1 text-sm text-slate-950 placeholder:text-slate-400 focus:outline-none'
+          placeholder='Buscar productos'
+          className='min-h-11 w-full min-w-0 border-0 bg-white px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:outline-none sm:px-4'
           aria-label='Buscar productos'
         />
         <div aria-hidden='true' className='h-6 w-px shrink-0 bg-slate-200' />
         <button
           type='submit'
-          className='flex cursor-pointer h-10 w-12 shrink-0 items-center justify-center bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700 focus:outline-none'
+          className='flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700 focus:outline-none'
           aria-label='Buscar'
         >
           <svg

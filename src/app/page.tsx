@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const featuredProduct = products[0];
 
   return buildStorefrontMetadata({
-    title: 'Tienda online de periféricos para PC',
+    title: 'Periféricos de PC',
     description: `Comprá ${productCountLabel} en monitores, teclados, mouses y auriculares con catálogo online para gaming, trabajo y setups profesionales.`,
     pathname: '/',
     image: featuredProduct?.image || undefined,

@@ -31,7 +31,7 @@ export function ProductDetailActions({ product }: ProductDetailActionsProps) {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <div className="w-full sm:max-w-32">
+          <div className="w-full sm:max-w-36">
             <label htmlFor="quantity" className="form-label">
               Cantidad
             </label>

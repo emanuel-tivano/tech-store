@@ -25,17 +25,17 @@ export function ProductCard({ product }: ProductCardProps) {
         className='group block h-full text-inherit no-underline'
       >
         <div className='surface-card card-hover flex h-full flex-col overflow-hidden rounded-2xl border-slate-200/80 bg-white'>
-          <div className='border-b border-slate-100 bg-linear-to-b from-slate-50 to-white p-4 sm:p-5'>
-            <div className='mb-4 flex items-center justify-between gap-3'>
+          <div className='border-b border-slate-100 bg-linear-to-b from-slate-50 to-white p-3 sm:p-5'>
+            <div className='mb-3 flex flex-wrap items-start justify-between gap-2 sm:mb-4 sm:gap-3'>
               <span className='brand-badge inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em]'>
                 {CATEGORY_LABELS[product.categoryId]}
               </span>
               {product.freeShipment ? (
-                <div className='flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700'>
+                <div className='inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
-                    width='24'
-                    height='24'
+                    width='20'
+                    height='20'
                     viewBox='0 0 24 24'
                     fill='none'
                     stroke='currentColor'
@@ -49,28 +49,26 @@ export function ProductCard({ product }: ProductCardProps) {
                     <path d='M5 17h-2v-11a1 1 0 0 1 1 -1h9v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5' />
                   </svg>
 
-                  <span className='ms-1'>
-                    Envío gratis
-                  </span>
+                  <span className='ms-1'>Envío gratis</span>
                 </div>
               ) : null}
             </div>
 
-            <div className='flex min-h-64 items-center justify-center'>
+            <div className='flex min-h-52 items-center justify-center sm:min-h-64'>
               <Image
                 src={imageSrc}
                 alt={product.title}
                 width={PRODUCT_CARD_IMAGE_WIDTH}
                 height={PRODUCT_CARD_IMAGE_HEIGHT}
                 sizes='(min-width: 1536px) 18rem, (min-width: 1280px) 20rem, (min-width: 640px) 45vw, 90vw'
-                className='h-56 w-full object-contain transition-transform duration-300 group-hover:scale-[1.03] sm:h-60'
+                className='h-44 w-full object-contain transition-transform duration-300 group-hover:scale-[1.03] sm:h-56 md:h-60'
               />
             </div>
           </div>
 
-          <div className='flex flex-1 flex-col gap-2 px-5 py-4'>
+          <div className='flex flex-1 flex-col gap-3 px-4 py-4 sm:px-5'>
             <div className='space-y-2'>
-              <h2 className='line-clamp-2 text-lg font-semibold leading-snug text-slate-950'>
+              <h2 className='line-clamp-2 text-base font-semibold leading-snug text-slate-950 sm:text-lg'>
                 {product.title}
               </h2>
               <p className='line-clamp-2 text-sm leading-6 text-slate-500'>
@@ -93,15 +91,15 @@ export function ProductCard({ product }: ProductCardProps) {
               </div>
             </div>
 
-            <div className='mt-auto flex flex-col gap-4'>
-              <div className='flex items-center justify-between gap-4'>
+            <div className='mt-auto flex flex-col gap-3'>
+              <div className='flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-end min-[430px]:justify-between'>
                 <div className='space-y-1'>
-                  <span className='text-2xl font-semibold tracking-tight text-slate-950'>
+                  <span className='whitespace-nowrap text-xl font-semibold tracking-tight text-slate-950 min-[390px]:text-lg sm:text-2xl'>
                     $ {currencyFormatter.format(product.price)}
                   </span>
                 </div>
 
-                <div className='flex items-center'>
+                <div className='flex items-center self-start rounded-full bg-amber-50 px-2.5 py-1 text-sm font-medium text-slate-700'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     width='17'
@@ -116,14 +114,14 @@ export function ProductCard({ product }: ProductCardProps) {
                     <path stroke='none' d='M0 0h24v24H0z' fill='none' />
                     <path d='M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245' />
                   </svg>
-                  <span className='rounded-full bg-amber-50 ps-1 pe-2 py-1 font-medium text-slate-700'>
+                  <span className='ps-1'>
                     {product.rating} ({product.opinions})
                   </span>
                 </div>
               </div>
 
               <span
-                className={`inline-flex min-h-11 items-center justify-center rounded-xl px-4 text-sm font-semibold ${
+                className={`inline-flex min-h-11 w-full items-center justify-center rounded-xl px-4 text-sm font-semibold ${
                   product.stock > 0
                     ? 'bg-slate-950 text-white'
                     : 'border border-slate-200 bg-slate-100 text-slate-500'
