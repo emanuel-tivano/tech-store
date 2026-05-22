@@ -174,4 +174,64 @@ describe('CheckoutPageContent', () => {
     expect(clearCartMock).toHaveBeenCalledTimes(1);
     expect(window.sessionStorage.getItem(CHECKOUT_SESSION_STORAGE_KEY)).toBeNull();
   });
+
+  it('tolera fallos al guardar en sessionStorage', async () => {
+    const user = userEvent.setup();
+    const setItemSpy = vi
+      .spyOn(Storage.prototype, 'setItem')
+      .mockImplementation(() => {
+        throw new Error('blocked');
+      });
+
+    renderCheckout();
+
+    await user.type(screen.getByLabelText('Nombre completo'), 'Tomás Ibarra');
+
+    expect(screen.getByLabelText('Nombre completo')).toHaveValue('Tomás Ibarra');
+    expect(setItemSpy).toHaveBeenCalled();
+
+    setItemSpy.mockRestore();
+  });
+
+  it('tolera fallos al limpiar sessionStorage despues de una orden exitosa', async () => {
+    const user = userEvent.setup();
+    const removeItemSpy = vi
+      .spyOn(Storage.prototype, 'removeItem')
+      .mockImplementation(() => {
+        throw new Error('blocked');
+      });
+
+    window.sessionStorage.setItem(
+      CHECKOUT_SESSION_STORAGE_KEY,
+      JSON.stringify({
+        fullName: 'Tomás Ibarra',
+        email: 'tomas@example.com',
+        phone: '+54 11 5555 5555',
+        address: 'Av. Cabildo 1234',
+        city: 'Buenos Aires',
+        province: 'Buenos Aires',
+        postalCode: '1425',
+        deliveryMethod: 'home-delivery',
+        paymentMethod: 'credit-card',
+      }),
+    );
+
+    renderCheckout();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Nombre completo')).toHaveValue('Tomás Ibarra');
+    });
+
+    await user.type(screen.getByLabelText('Confirmar email'), 'tomas@example.com');
+    await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Pedido registrado correctamente')).toBeInTheDocument();
+    });
+
+    expect(removeItemSpy).toHaveBeenCalled();
+    expect(clearCartMock).toHaveBeenCalledTimes(1);
+
+    removeItemSpy.mockRestore();
+  });
 });

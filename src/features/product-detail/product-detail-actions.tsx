@@ -13,13 +13,15 @@ interface ProductDetailActionsProps {
 }
 
 export function ProductDetailActions({ product }: ProductDetailActionsProps) {
-  const { addItem, getItemQuantity } = useCart();
+  const { addItem, getItemQuantity, isHydrated } = useCart();
   const [quantity, setQuantity] = useState(1);
 
   const quantityInCart = getItemQuantity(product.id);
   const maxQuantity = getRemainingProductStock(product.stock, quantityInCart);
   const isOutOfStock = maxQuantity <= 0;
+  const isPendingAvailability = !isHydrated;
   const hasCartReservedStock = quantityInCart > 0;
+  const isActionDisabled = isPendingAvailability || isOutOfStock;
 
   useEffect(() => {
     if (maxQuantity <= 0) {
@@ -55,7 +57,7 @@ export function ProductDetailActions({ product }: ProductDetailActionsProps) {
               min={isOutOfStock ? 0 : 1}
               max={maxQuantity}
               value={isOutOfStock ? 0 : quantity}
-              disabled={isOutOfStock}
+              disabled={isActionDisabled}
               onChange={(event) => {
                 const nextValue = Number(event.target.value);
                 const normalizedValue = Number.isNaN(nextValue)
@@ -71,16 +73,22 @@ export function ProductDetailActions({ product }: ProductDetailActionsProps) {
             type="button"
             className="btn-primary min-h-12 flex-1 sm:flex-none sm:px-6"
             data-testid="pdp-add-to-cart"
-            disabled={isOutOfStock}
+            disabled={isActionDisabled}
             onClick={() => addItem(mapProductDetailToCartLineInput(product), quantity)}
           >
-            {isOutOfStock ? 'No disponible por ahora' : 'Agregar al carrito'}
+            {isPendingAvailability
+              ? 'Actualizando disponibilidad'
+              : isOutOfStock
+                ? 'No disponible por ahora'
+                : 'Agregar al carrito'}
           </button>
         </div>
 
         <div className="flex flex-col gap-2 text-sm">
-          <p className={isOutOfStock ? 'font-medium text-slate-700' : 'text-slate-600'}>
-            {product.stock <= 0
+          <p className={isActionDisabled ? 'font-medium text-slate-700' : 'text-slate-600'}>
+            {isPendingAvailability
+              ? 'Estamos validando la disponibilidad actual para que puedas agregar la cantidad correcta.'
+              : product.stock <= 0
               ? 'Este producto no tiene unidades disponibles en este momento.'
               : isOutOfStock
                 ? 'Ya tenés en tu carrito todas las unidades disponibles de este producto.'

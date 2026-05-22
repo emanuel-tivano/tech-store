@@ -23,6 +23,7 @@ type CartAction =
 
 interface CartContextValue {
   cart: CartState;
+  isHydrated: boolean;
   addItem: (product: CartLineInput, quantity?: number) => void;
   setItemQuantity: (productId: string, quantity: number) => void;
   removeItem: (productId: string) => void;
@@ -36,10 +37,45 @@ interface CartContextValue {
 const STORAGE_KEY = 'perifericos-cart';
 const initialState: CartState = { items: [] };
 
+function mergeCartStates(state: CartState, hydratedState: CartState): CartState {
+  if (state.items.length === 0) {
+    return hydratedState;
+  }
+
+  if (hydratedState.items.length === 0) {
+    return state;
+  }
+
+  const mergedItems = new Map(state.items.map((item) => [item.id, item]));
+
+  for (const hydratedItem of hydratedState.items) {
+    const currentItem = mergedItems.get(hydratedItem.id);
+
+    if (!currentItem) {
+      mergedItems.set(hydratedItem.id, hydratedItem);
+      continue;
+    }
+
+    const nextStock = currentItem.stock;
+    const nextQuantity = Math.min(
+      currentItem.quantity + hydratedItem.quantity,
+      nextStock,
+    );
+
+    mergedItems.set(hydratedItem.id, {
+      ...hydratedItem,
+      ...currentItem,
+      quantity: nextQuantity,
+    });
+  }
+
+  return { items: Array.from(mergedItems.values()) };
+}
+
 export function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'HYDRATE':
-      return action.payload;
+      return mergeCartStates(state, action.payload);
     case 'ADD_ITEM': {
       const existingItem = state.items.find(
         (item) => item.id === action.payload.product.id,
@@ -147,6 +183,7 @@ export function CartProvider({ children }: PropsWithChildren) {
   const value = useMemo<CartContextValue>(
     () => ({
       cart,
+      isHydrated,
       addItem: (product: CartLineInput, quantity = 1) => {
         if (quantity <= 0) {
           return;
@@ -175,7 +212,7 @@ export function CartProvider({ children }: PropsWithChildren) {
       isInCart: (productId: string) =>
         cart.items.some((item) => item.id === productId),
     }),
-    [cart],
+    [cart, isHydrated],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

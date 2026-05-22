@@ -60,7 +60,7 @@ export function getSiteLogoUrl(): string {
   return toAbsoluteImageUrl(SITE_LOGO_PATH);
 }
 
-export function buildWebsiteJsonLd() {
+export function buildWebsiteJsonLd(): WebsiteJsonLd {
   const siteUrl = getSiteUrl();
   const searchTarget = new URL('/', siteUrl);
   searchTarget.searchParams.set('q', '{search_term_string}');
@@ -155,3 +155,15 @@ export const storefrontMetadata = {
   siteUrl: getSiteUrl(),
   logoUrl: getSiteLogoUrl(),
 };
+interface WebsiteJsonLd {
+  '@context': 'https://schema.org';
+  '@type': 'WebSite';
+  name: string;
+  url: string;
+  inLanguage: string;
+  potentialAction: {
+    '@type': 'SearchAction';
+    target: string;
+    'query-input': string;
+  };
+}

@@ -89,12 +89,16 @@ export function writeCheckoutFormToSessionStorage(values: CheckoutFormValues) {
     paymentMethod: values.paymentMethod,
   };
 
-  window.sessionStorage.setItem(
-    CHECKOUT_SESSION_STORAGE_KEY,
-    JSON.stringify(persistedValues),
-  );
+  try {
+    window.sessionStorage.setItem(
+      CHECKOUT_SESSION_STORAGE_KEY,
+      JSON.stringify(persistedValues),
+    );
+  } catch {}
 }
 
 export function clearCheckoutFormSessionStorage() {
-  window.sessionStorage.removeItem(CHECKOUT_SESSION_STORAGE_KEY);
+  try {
+    window.sessionStorage.removeItem(CHECKOUT_SESSION_STORAGE_KEY);
+  } catch {}
 }

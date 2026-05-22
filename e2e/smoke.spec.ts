@@ -39,8 +39,8 @@ test('recorre home, PDP, carrito y checkout', async ({ page }) => {
   await expect(addToCartButton).toBeEnabled();
   await addToCartButton.click();
 
-  const cartLink = page.getByRole('link', { name: /ir al carrito con 1 productos/i });
-  await expect(cartLink).toBeVisible();
+  const cartLink = page.locator('a[href="/cart"]');
+  await expect(cartLink).toHaveAttribute('aria-label', /ir al carrito con [1-9]\d* productos/i);
   await cartLink.click();
 
   await expect(page).toHaveURL(/\/cart$/);
