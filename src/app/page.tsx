@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
 
-import { JsonLd } from '@/components/json-ld';
 import { TrustSignals } from '@/components/trust-signals';
 import { buildCatalogState, getCatalogHeading } from '@/lib/catalog-query';
 import { formatProductCount } from '@/lib/copy';
 import { readProductCards } from '@/lib/products-read';
 import { CatalogView } from '@/features/catalog/catalog-view';
-import { buildStorefrontMetadata, storefrontMetadata } from '@/lib/metadata';
+import { buildStorefrontMetadata } from '@/lib/metadata';
 
 // Prisma-backed catalog data is resolved at request time in this demo environment.
 export const dynamic = 'force-dynamic';
@@ -32,17 +31,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const products = await readProductCards();
   const { filteredProducts, state } = buildCatalogState(products, await searchParams);
   const heading = getCatalogHeading({ query: state.query, sort: state.sort });
-  const websiteJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: storefrontMetadata.siteName,
-    url: storefrontMetadata.siteUrl,
-    inLanguage: 'es-AR',
-  };
 
   return (
     <>
-      <JsonLd data={websiteJsonLd} />
       <CatalogView
         basePath="/"
         categoryFilterEnabled

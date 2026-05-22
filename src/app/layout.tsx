@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 
 import { JsonLd } from '@/components/json-ld';
 import { SiteHeader } from '@/components/site-header';
-import { getMetadataBase, storefrontMetadata } from '@/lib/metadata';
+import { buildWebsiteJsonLd, getMetadataBase, storefrontMetadata } from '@/lib/metadata';
 
 import { Providers } from './providers';
 
@@ -45,10 +45,12 @@ export default function RootLayout({
     logo: storefrontMetadata.logoUrl,
     inLanguage: 'es-AR',
   };
+  const websiteJsonLd = buildWebsiteJsonLd();
 
   return (
     <html lang="es">
       <body>
+        <JsonLd data={websiteJsonLd} />
         <JsonLd data={organizationJsonLd} />
         <Providers>
           <div className="min-h-screen bg-slate-100">

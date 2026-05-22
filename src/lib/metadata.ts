@@ -60,6 +60,25 @@ export function getSiteLogoUrl(): string {
   return toAbsoluteImageUrl(SITE_LOGO_PATH);
 }
 
+export function buildWebsiteJsonLd() {
+  const siteUrl = getSiteUrl();
+  const searchTarget = new URL('/', siteUrl);
+  searchTarget.searchParams.set('q', '{search_term_string}');
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: siteUrl,
+    inLanguage: 'es-AR',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: searchTarget.toString(),
+      'query-input': 'required name=search_term_string',
+    },
+  };
+}
+
 export function buildStorefrontMetadata({
   title,
   description,
