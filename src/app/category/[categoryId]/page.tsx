@@ -13,8 +13,7 @@ import { readProductCardsByCategory } from '@/lib/products-read';
 import { buildMissingMetadata, buildStorefrontMetadata, getCanonicalUrl } from '@/lib/metadata';
 import type { Category } from '@/types';
 
-// Prisma-backed category pages are rendered on demand in this demo environment.
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 interface CategoryPageProps {
   params: Promise<{ categoryId: string }>;

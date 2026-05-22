@@ -7,8 +7,7 @@ import { readProductCards } from '@/lib/products-read';
 import { CatalogView } from '@/features/catalog/catalog-view';
 import { buildStorefrontMetadata } from '@/lib/metadata';
 
-// Prisma-backed catalog data is resolved at request time in this demo environment.
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const products = await readProductCards();

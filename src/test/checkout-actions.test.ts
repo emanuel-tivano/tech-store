@@ -1,12 +1,17 @@
 import { beforeEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 
-const { createOrderMock, noStoreMock } = vi.hoisted(() => ({
+const { createOrderMock, noStoreMock, revalidateCatalogDataMock } = vi.hoisted(() => ({
   createOrderMock: vi.fn(),
   noStoreMock: vi.fn(),
+  revalidateCatalogDataMock: vi.fn(),
 }));
 
 vi.mock('next/cache', () => ({
   unstable_noStore: noStoreMock,
+}));
+
+vi.mock('@/lib/server-cache', () => ({
+  revalidateCatalogData: revalidateCatalogDataMock,
 }));
 
 vi.mock('@/lib/orders-create', () => ({
@@ -46,6 +51,7 @@ describe('createOrderAction', () => {
     });
 
     expect(noStoreMock).toHaveBeenCalledTimes(1);
+    expect(revalidateCatalogDataMock).toHaveBeenCalledTimes(1);
     expect(result).toEqual({
       status: 'success',
       orderId: 'order-123',
@@ -82,6 +88,7 @@ describe('createOrderAction', () => {
       status: 'error',
       message: 'Los datos de la orden no son válidos.',
     });
+    expect(revalidateCatalogDataMock).not.toHaveBeenCalled();
 
     if (result.status === 'error') {
       expectTypeOf(result.message).toEqualTypeOf<string>();
@@ -110,5 +117,6 @@ describe('createOrderAction', () => {
       status: 'error',
       message: 'No pudimos crear la orden. Intentá nuevamente en unos instantes.',
     });
+    expect(revalidateCatalogDataMock).not.toHaveBeenCalled();
   });
 });

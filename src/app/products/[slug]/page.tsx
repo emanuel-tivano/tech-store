@@ -17,8 +17,7 @@ import {
 } from '@/lib/metadata';
 import { readProductCardsByCategory, readProductDetailBySlug, readProductSeoBySlug } from '@/lib/products-read';
 
-// Product details depend on live Prisma reads in the current demo setup.
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;

@@ -4,7 +4,12 @@ import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import { CATEGORY_SLUGS } from '@/lib/catalog-taxonomy';
-import { cacheDataReader } from '@/lib/server-cache';
+import {
+  cacheDataReader,
+  cacheRouteDataReader,
+  CATALOG_REVALIDATE_SECONDS,
+  DATA_CACHE_TAGS,
+} from '@/lib/server-cache';
 import type { Category, CategoryDTO, CategorySeoDTO } from '@/types';
 
 const categorySummarySelect = {
@@ -43,45 +48,59 @@ function mapCategorySeo(category: CategorySeoRecord): CategorySeoDTO {
   };
 }
 
-const readCategorySummaryRecords = cacheDataReader(async (): Promise<CategorySummaryRecord[]> => {
-  const categories = await prisma.category.findMany({
-    where: {
-      isActive: true,
-      slug: {
-        in: [...CATEGORY_SLUGS],
-      },
+const readCategoriesCached = cacheDataReader(
+  cacheRouteDataReader(
+    async (): Promise<CategoryDTO[]> => {
+      const categories = await prisma.category.findMany({
+        where: {
+          isActive: true,
+          slug: {
+            in: [...CATEGORY_SLUGS],
+          },
+        },
+        select: categorySummarySelect,
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      return categories.map(mapCategorySummary);
     },
-    select: categorySummarySelect,
-    orderBy: {
-      createdAt: 'asc',
+    ['categories-summary'],
+    {
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+      tags: [DATA_CACHE_TAGS.catalog, DATA_CACHE_TAGS.categories, DATA_CACHE_TAGS.sitemap],
     },
-  });
+  ),
+);
 
-  return categories;
-});
+const readCategorySeoBySlugCached = cacheDataReader(
+  cacheRouteDataReader(
+    async (categorySlug: Category): Promise<CategorySeoDTO | null> => {
+      const category = await prisma.category.findFirst({
+        where: {
+          slug: categorySlug,
+          isActive: true,
+        },
+        select: categorySeoSelect,
+      });
 
-const readCategorySeoRecordBySlug = cacheDataReader(
-  async (categorySlug: Category): Promise<CategorySeoRecord | null> => {
-    const category = await prisma.category.findFirst({
-      where: {
-        slug: categorySlug,
-        isActive: true,
-      },
-      select: categorySeoSelect,
-    });
-
-    return category;
-  },
+      return category ? mapCategorySeo(category) : null;
+    },
+    ['category-seo-by-slug'],
+    {
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+      tags: [DATA_CACHE_TAGS.catalog, DATA_CACHE_TAGS.categories, DATA_CACHE_TAGS.sitemap],
+    },
+  ),
 );
 
 export async function readCategories(): Promise<CategoryDTO[]> {
-  const categories = await readCategorySummaryRecords();
-
-  return categories.map(mapCategorySummary);
+  return readCategoriesCached();
 }
 
 export async function readCategorySlugs(): Promise<Category[]> {
-  const categories = await readCategorySummaryRecords();
+  const categories = await readCategoriesCached();
 
   return categories.map((category) => category.slug as Category);
 }
@@ -89,9 +108,7 @@ export async function readCategorySlugs(): Promise<Category[]> {
 export async function readCategorySeoBySlug(
   categorySlug: Category,
 ): Promise<CategorySeoDTO | null> {
-  const category = await readCategorySeoRecordBySlug(categorySlug);
-
-  return category ? mapCategorySeo(category) : null;
+  return readCategorySeoBySlugCached(categorySlug);
 }
 
 export async function readCategoryBySlug(categorySlug: Category): Promise<CategorySeoDTO | null> {

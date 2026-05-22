@@ -6,7 +6,12 @@ import path from 'node:path';
 import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
-import { cacheDataReader } from '@/lib/server-cache';
+import {
+  cacheDataReader,
+  cacheRouteDataReader,
+  CATALOG_REVALIDATE_SECONDS,
+  DATA_CACHE_TAGS,
+} from '@/lib/server-cache';
 import type {
   Category,
   ProductCardDTO,
@@ -113,78 +118,151 @@ function mapProductDetail(record: ProductDetailRecord): ProductDetailDTO {
   };
 }
 
-const readProductCardRecords = cacheDataReader(async (): Promise<ProductCardRecord[]> => {
-  const products = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      category: {
-        isActive: true,
-      },
-    },
-    select: productCardSelect,
-    orderBy: {
-      createdAt: 'asc',
-    },
-  });
-
-  return products;
-});
-
-const readProductCardRecordsByCategory = cacheDataReader(
-  async (categorySlug: Category): Promise<ProductCardRecord[]> => {
-    const products = await prisma.product.findMany({
-      where: {
-        isActive: true,
-        category: {
-          slug: categorySlug,
+const readProductCardsCached = cacheDataReader(
+  cacheRouteDataReader(
+    async (): Promise<ProductCardDTO[]> => {
+      const products = await prisma.product.findMany({
+        where: {
           isActive: true,
+          category: {
+            isActive: true,
+          },
         },
-      },
-      select: productCardSelect,
-      orderBy: {
-        createdAt: 'asc',
-      },
-    });
+        select: productCardSelect,
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
 
-    return products;
-  },
+      return products.map((product) => mapProductCard(product, product.category.slug as Category));
+    },
+    ['product-cards'],
+    {
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+      tags: [DATA_CACHE_TAGS.catalog, DATA_CACHE_TAGS.products, DATA_CACHE_TAGS.sitemap],
+    },
+  ),
 );
 
-const readProductDetailRecordBySlug = cacheDataReader(
-  async (slug: string): Promise<ProductDetailRecord | null> => {
-    const product = await prisma.product.findFirst({
-      where: {
-        slug,
-        isActive: true,
-        category: {
+const readProductCardsByCategoryCached = cacheDataReader(
+  cacheRouteDataReader(
+    async (categorySlug: Category): Promise<ProductCardDTO[]> => {
+      const products = await prisma.product.findMany({
+        where: {
           isActive: true,
+          category: {
+            slug: categorySlug,
+            isActive: true,
+          },
         },
-      },
-      select: productDetailSelect,
-    });
+        select: productCardSelect,
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
 
-    return product;
-  },
+      return products.map((product) => mapProductCard(product, categorySlug));
+    },
+    ['product-cards-by-category'],
+    {
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+      tags: [DATA_CACHE_TAGS.catalog, DATA_CACHE_TAGS.products, DATA_CACHE_TAGS.categories, DATA_CACHE_TAGS.sitemap],
+    },
+  ),
+);
+
+const readProductDetailBySlugCached = cacheDataReader(
+  cacheRouteDataReader(
+    async (slug: string): Promise<ProductDetailDTO | null> => {
+      const product = await prisma.product.findFirst({
+        where: {
+          slug,
+          isActive: true,
+          category: {
+            isActive: true,
+          },
+        },
+        select: productDetailSelect,
+      });
+
+      return product ? mapProductDetail(product) : null;
+    },
+    ['product-detail-by-slug'],
+    {
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+      tags: [DATA_CACHE_TAGS.catalog, DATA_CACHE_TAGS.products, DATA_CACHE_TAGS.sitemap],
+    },
+  ),
+);
+
+const readProductIdsCached = cacheDataReader(
+  cacheRouteDataReader(
+    async (): Promise<string[]> => {
+      const products = await prisma.product.findMany({
+        where: {
+          isActive: true,
+          category: {
+            isActive: true,
+          },
+        },
+        select: {
+          id: true,
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      return products.map((product) => product.id);
+    },
+    ['product-ids'],
+    {
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+      tags: [DATA_CACHE_TAGS.catalog, DATA_CACHE_TAGS.products],
+    },
+  ),
+);
+
+const readProductSlugsCached = cacheDataReader(
+  cacheRouteDataReader(
+    async (): Promise<string[]> => {
+      const products = await prisma.product.findMany({
+        where: {
+          isActive: true,
+          category: {
+            isActive: true,
+          },
+        },
+        select: {
+          slug: true,
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      return products.map((product) => product.slug);
+    },
+    ['product-slugs'],
+    {
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+      tags: [DATA_CACHE_TAGS.catalog, DATA_CACHE_TAGS.products, DATA_CACHE_TAGS.sitemap],
+    },
+  ),
 );
 
 export async function readProductCards(): Promise<ProductCardDTO[]> {
-  const products = await readProductCardRecords();
-
-  return products.map((product) => mapProductCard(product, product.category.slug as Category));
+  return readProductCardsCached();
 }
 
 export async function readProductCardsByCategory(
   categorySlug: Category,
 ): Promise<ProductCardDTO[]> {
-  const products = await readProductCardRecordsByCategory(categorySlug);
-
-  return products.map((product) => mapProductCard(product, categorySlug));
+  return readProductCardsByCategoryCached(categorySlug);
 }
 
 export async function readProductDetailBySlug(slug: string): Promise<ProductDetailDTO | null> {
-  const product = await readProductDetailRecordBySlug(slug);
-
-  return product ? mapProductDetail(product) : null;
+  return readProductDetailBySlugCached(slug);
 }
 
 export async function readProductSeoBySlug(slug: string): Promise<ProductSeoDTO | null> {
@@ -224,39 +302,9 @@ export async function readProductBySlug(slug: string): Promise<ProductDetailDTO 
 }
 
 export async function readProductIds(): Promise<string[]> {
-  const products = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      category: {
-        isActive: true,
-      },
-    },
-    select: {
-      id: true,
-    },
-    orderBy: {
-      createdAt: 'asc',
-    },
-  });
-
-  return products.map((product) => product.id);
+  return readProductIdsCached();
 }
 
 export async function readProductSlugs(): Promise<string[]> {
-  const products = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      category: {
-        isActive: true,
-      },
-    },
-    select: {
-      slug: true,
-    },
-    orderBy: {
-      createdAt: 'asc',
-    },
-  });
-
-  return products.map((product) => product.slug);
+  return readProductSlugsCached();
 }
