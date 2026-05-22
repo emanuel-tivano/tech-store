@@ -1,7 +1,8 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { PageState } from '@/components/page-state';
 import { TrustSignals } from '@/components/trust-signals';
@@ -11,6 +12,11 @@ import { formatCheckoutReviewSummary, formatProductCount, pluralize } from '@/li
 
 import { deliveryOptions, paymentOptions } from './options';
 import { CHECKOUT_FREE_SHIPPING_THRESHOLD, getCheckoutSummary } from './summary';
+import {
+  clearCheckoutFormSessionStorage,
+  readCheckoutFormFromSessionStorage,
+  writeCheckoutFormToSessionStorage,
+} from './storage';
 import {
   normalizePhone,
   type CheckoutFormErrors,
@@ -86,6 +92,28 @@ export function CheckoutPageContent() {
   const [errors, setErrors] = useState<CheckoutFormErrors>({});
   const [status, setStatus] = useState<CheckoutStatus>('idle');
   const [confirmation, setConfirmation] = useState<CheckoutConfirmation | null>(null);
+  const [isSessionStorageHydrated, setIsSessionStorageHydrated] = useState(false);
+
+  useEffect(() => {
+    const storedValues = readCheckoutFormFromSessionStorage();
+
+    if (storedValues) {
+      setValues((currentValues) => ({
+        ...currentValues,
+        ...storedValues,
+      }));
+    }
+
+    setIsSessionStorageHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isSessionStorageHydrated || status === 'success') {
+      return;
+    }
+
+    writeCheckoutFormToSessionStorage(values);
+  }, [isSessionStorageHydrated, status, values]);
 
   const hasItems = cart.items.length > 0;
   const summary = getCheckoutSummary(cart.items, values.deliveryMethod);
@@ -214,6 +242,7 @@ export function CheckoutPageContent() {
     });
 
     if (result.status === 'success') {
+      clearCheckoutFormSessionStorage();
       setConfirmation({
         orderId: result.orderId,
         email: values.email.trim().toLowerCase(),
