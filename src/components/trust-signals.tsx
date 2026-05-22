@@ -32,7 +32,7 @@ export function TrustSignals({
   title = 'Señales de confianza',
 }: TrustSignalsProps) {
   return (
-    <section className="surface-card rounded-3xl border-slate-200/80">
+    <section className="surface-card rounded-3xl mt-7 border-slate-200/80">
       <div className="flex flex-col gap-5 p-5 sm:p-6">
         <div>
           <p className="brand-eyebrow text-xs font-semibold uppercase tracking-[0.22em]">

@@ -31,9 +31,28 @@ export function ProductCard({ product }: ProductCardProps) {
                 {CATEGORY_LABELS[product.categoryId]}
               </span>
               {product.freeShipment ? (
-                <span className='rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700'>
-                  Envío gratis
-                </span>
+                <div className='flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    width='24'
+                    height='24'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='1'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  >
+                    <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                    <path d='M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0' />
+                    <path d='M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0' />
+                    <path d='M5 17h-2v-11a1 1 0 0 1 1 -1h9v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5' />
+                  </svg>
+
+                  <span className='ms-1'>
+                    Envío gratis
+                  </span>
+                </div>
               ) : null}
             </div>
 
@@ -77,9 +96,6 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className='mt-auto flex flex-col gap-4'>
               <div className='flex items-center justify-between gap-4'>
                 <div className='space-y-1'>
-                  <p className='text-xs font-semibold uppercase tracking-[0.18em] text-slate-400'>
-                    Precio
-                  </p>
                   <span className='text-2xl font-semibold tracking-tight text-slate-950'>
                     $ {currencyFormatter.format(product.price)}
                   </span>
@@ -88,8 +104,8 @@ export function ProductCard({ product }: ProductCardProps) {
                 <div className='flex items-center'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
-                    width='20'
-                    height='20'
+                    width='17'
+                    height='17'
                     viewBox='0 0 24 24'
                     fill='#0066ff'
                     stroke='#0066ff'
@@ -100,7 +116,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     <path stroke='none' d='M0 0h24v24H0z' fill='none' />
                     <path d='M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245' />
                   </svg>
-                  <span className='rounded-full bg-amber-50 ms-1 px-2 py-1 text-sm font-medium text-slate-700'>
+                  <span className='rounded-full bg-amber-50 ps-1 pe-2 py-1 font-medium text-slate-700'>
                     {product.rating} ({product.opinions})
                   </span>
                 </div>

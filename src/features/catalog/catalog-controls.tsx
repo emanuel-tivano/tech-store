@@ -31,35 +31,10 @@ export function CatalogControls({
   return (
     <section className="surface-card rounded-3xl border-slate-200/80">
       <div className="flex flex-col gap-5 p-5 sm:p-6">
-        <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="brand-eyebrow text-xs font-semibold uppercase tracking-[0.22em]">
-              Explorar
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
-              Búsqueda, filtros y orden
-            </h2>
-          </div>
-          <p className="text-sm text-slate-500">
-            {state.resultCount} resultado{state.resultCount === 1 ? '' : 's'}
-          </p>
-        </div>
-
         <form action={basePath} className="grid gap-4">
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
-            <div>
-              <label htmlFor="catalog-search" className="form-label">
-                Buscar productos
-              </label>
-              <input
-                id="catalog-search"
-                name="q"
-                defaultValue={state.query}
-                className="input-base"
-                placeholder="Buscar por nombre o descripción"
-              />
-            </div>
+          <input type="hidden" name="q" value={state.query} />
 
+          <div className="grid gap-4 lg:grid-cols-4">
             {categoryFilterEnabled ? (
               <div>
                 <label htmlFor="catalog-category" className="form-label">
@@ -82,19 +57,21 @@ export function CatalogControls({
             ) : null}
 
             <div>
-              <label htmlFor="catalog-price" className="form-label">
-                Precio máximo
+              <label htmlFor="catalog-sort" className="form-label">
+                Ordenar por
               </label>
-              <input
-                id="catalog-price"
-                name="maxPrice"
-                type="number"
-                min={0}
-                inputMode="numeric"
-                defaultValue={state.maxPrice ?? ''}
+              <select
+                id="catalog-sort"
+                name="sort"
+                defaultValue={state.sort}
                 className="input-base"
-                placeholder="Ej. 250000"
-              />
+              >
+                {sortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -116,21 +93,19 @@ export function CatalogControls({
             </div>
 
             <div>
-              <label htmlFor="catalog-sort" className="form-label">
-                Ordenar por
+              <label htmlFor="catalog-price" className="form-label">
+                Precio máximo
               </label>
-              <select
-                id="catalog-sort"
-                name="sort"
-                defaultValue={state.sort}
+              <input
+                id="catalog-price"
+                name="maxPrice"
+                type="number"
+                min={0}
+                inputMode="numeric"
+                defaultValue={state.maxPrice ?? ''}
                 className="input-base"
-              >
-                {sortOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                placeholder="Ej. 250000"
+              />
             </div>
           </div>
 

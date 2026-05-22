@@ -1,8 +1,10 @@
 'use client';
 
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { HeaderSearch } from '@/components/header-search';
 import { useCart } from '@/context/cart-context';
 import { CATEGORY_NAV_ITEMS } from '@/lib/catalog-taxonomy';
 
@@ -26,7 +28,7 @@ export function SiteHeader() {
     <header className='brand-header border-b border-slate-200/70 shadow-md shadow-slate-950/5'>
       <div className='mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-6 lg:px-8'>
         <div className='flex flex-col gap-3 py-3 sm:gap-3 sm:py-3'>
-          <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+          <div className='grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center'>
             <div className='flex min-w-0 items-center gap-1'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -49,14 +51,20 @@ export function SiteHeader() {
               <div className='min-w-0'>
                 <Link
                   href='/'
-                  className='inline-flex text-xl font-semibold tracking-[-0.02em] text-white no-underline sm:text-2xl'
+                  className='inline-flex text-xl font-semibold tracking-[-0.02em] text-white no-underline sm:text-2xl pe-3.5'
                 >
                   Periféricos de PC
                 </Link>
               </div>
             </div>
 
-            <div className='flex flex-wrap items-center gap-2 sm:justify-end'>
+            <div className='order-3 lg:order-2'>
+              <Suspense fallback={<HeaderSearchFallback />}>
+                <HeaderSearch />
+              </Suspense>
+            </div>
+
+            <div className='order-2 flex flex-wrap items-center gap-2 sm:justify-end lg:order-3'>
               <Link
                 href='/help'
                 className='inline-flex items-center justify-center gap-1 px-3.5 py-2 font-medium text-white/[0.88]'
@@ -147,5 +155,18 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
+  );
+}
+
+function HeaderSearchFallback() {
+  return (
+    <div
+      aria-hidden='true'
+      className='flex min-h-12 items-center overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.08),0_8px_24px_rgba(15,23,42,0.08)]'
+    >
+      <div className='min-h-12 flex-1 bg-white' />
+      <div className='h-6 w-px bg-slate-200' />
+      <div className='h-12 w-12 bg-white' />
+    </div>
   );
 }
