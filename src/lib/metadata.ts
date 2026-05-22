@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 
 const DEFAULT_SITE_URL = 'https://tech-store.example.com';
-const SITE_NAME = 'Perifericos de PC';
+const SITE_NAME = 'Periféricos de PC';
 const DEFAULT_DESCRIPTION =
   'Tienda online de periféricos para PC con monitores, teclados, mouses y auriculares para gaming, trabajo y setups profesionales.';
-const SITE_LOGO_PATH = '../app/favicon.png';
+const SITE_LOGO_PATH = '/icon.png';
 
 function normalizeSiteUrl(value: string): string {
   const trimmedValue = value.trim();
@@ -65,11 +65,13 @@ export function buildStorefrontMetadata({
   description,
   pathname,
   image,
+  robots,
 }: {
   title: string;
   description: string;
   pathname: string;
   image?: string;
+  robots?: Metadata['robots'];
 }): Metadata {
   const canonicalUrl = getCanonicalUrl(pathname);
   const images = image ? [toAbsoluteImageUrl(image)] : undefined;
@@ -95,6 +97,7 @@ export function buildStorefrontMetadata({
       description,
       images,
     },
+    robots,
   };
 }
 

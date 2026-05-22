@@ -1,6 +1,4 @@
-import type { CartLineDTO } from '@/types';
-
-import type { DeliveryMethod } from './validation';
+import type { CartLineDTO, DeliveryMethod } from '@/types';
 
 export const CHECKOUT_FREE_SHIPPING_THRESHOLD = 350000;
 

@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import { TrustSignals } from '@/components/trust-signals';
 import { getCartLineTotal, useCart } from '@/context/cart-context';
+import { CATEGORY_LABELS } from '@/lib/catalog-taxonomy';
 
 const currencyFormatter = new Intl.NumberFormat('es-AR', {
   minimumFractionDigits: 2,
@@ -110,7 +111,7 @@ export function CartPageContent() {
                     <div className="space-y-3">
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                          {item.categoryId}
+                          {CATEGORY_LABELS[item.categoryId]}
                         </p>
                         <h2 className="mt-1 text-xl font-semibold tracking-tight text-slate-950">
                           {item.title}

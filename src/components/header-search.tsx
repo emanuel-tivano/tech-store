@@ -45,13 +45,13 @@ export function HeaderSearch() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder='Buscar productos'
-          className='min-h-11 w-full min-w-0 border-0 bg-white px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:outline-none sm:px-4'
+          className='min-h-11 w-full min-w-0 border-0 bg-white px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:outline-none focus-visible:outline-[var(--brand-500)] sm:px-4'
           aria-label='Buscar productos'
         />
         <div aria-hidden='true' className='h-6 w-px shrink-0 bg-slate-200' />
         <button
           type='submit'
-          className='flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700 focus:outline-none'
+          className='flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700 focus:outline-none focus-visible:outline-[var(--brand-500)]'
           aria-label='Buscar'
         >
           <svg

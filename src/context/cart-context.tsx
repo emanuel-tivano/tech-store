@@ -1,11 +1,13 @@
 'use client';
 
+import React from 'react';
 import {
   createContext,
   useContext,
   useEffect,
   useMemo,
   useReducer,
+  useState,
   type PropsWithChildren,
 } from 'react';
 
@@ -119,15 +121,21 @@ function parseCart(value: string | null): CartState {
 
 export function CartProvider({ children }: PropsWithChildren) {
   const [cart, dispatch] = useReducer(cartReducer, initialState);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     const storedCart = parseCart(window.localStorage.getItem(STORAGE_KEY));
     dispatch({ type: 'HYDRATE', payload: storedCart });
+    setIsHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
-  }, [cart]);
+  }, [cart, isHydrated]);
 
   const value = useMemo<CartContextValue>(
     () => ({

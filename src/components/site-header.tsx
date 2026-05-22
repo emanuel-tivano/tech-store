@@ -2,14 +2,18 @@
 
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 import { HeaderSearch } from '@/components/header-search';
 import { useCart } from '@/context/cart-context';
 import { CATEGORY_NAV_ITEMS } from '@/lib/catalog-taxonomy';
 
-function getLinkClassName(pathname: string, href: string) {
-  const isActive = pathname === href;
+function getLinkClassName(pathname: string, href: string, selectedCategory?: string | null) {
+  const isCategoryLink = href.startsWith('/category/');
+  const isActive =
+    pathname === href ||
+    (href === '/' && pathname === '/' && !selectedCategory) ||
+    (pathname === '/' && isCategoryLink && selectedCategory === href.slice('/category/'.length));
 
   return [
     'inline-flex items-center rounded-full border border-transparent px-3 py-1.5 text-sm font-medium transition-all duration-200',
@@ -21,8 +25,10 @@ function getLinkClassName(pathname: string, href: string) {
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { getTotalItems } = useCart();
   const totalItems = getTotalItems();
+  const selectedCategory = pathname === '/' ? searchParams.get('category') : null;
 
   return (
     <header className='brand-header border-b border-slate-200/70 shadow-md shadow-slate-950/5'>
@@ -51,7 +57,7 @@ export function SiteHeader() {
               <div className='min-w-0'>
                 <Link
                   href='/'
-                  className='inline-flex max-w-full text-lg font-semibold tracking-[-0.02em] text-white no-underline sm:text-2xl'
+                  className='inline-flex max-w-full rounded-md text-lg font-semibold tracking-[-0.02em] text-white no-underline focus-visible:outline-white sm:text-2xl'
                 >
                   <span className='truncate'>Periféricos de PC</span>
                 </Link>
@@ -67,7 +73,7 @@ export function SiteHeader() {
             <div className='order-2 grid grid-cols-2 gap-2 justify-self-end lg:order-3'>
               <Link
                 href='/help'
-                className='inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-white/[0.15] bg-white/[0.08] px-3 py-2 text-sm font-medium text-white/[0.92] backdrop-blur-sm'
+                className='inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-white/[0.15] bg-white/[0.08] px-3 py-2 text-sm font-medium text-white/[0.92] backdrop-blur-sm focus-visible:outline-white'
               >
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
@@ -89,7 +95,7 @@ export function SiteHeader() {
               </Link>
               <Link
                 href='/cart'
-                className='relative inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.15] bg-white/[0.08] px-3 py-2 text-sm font-medium text-white/[0.92] backdrop-blur-sm'
+                className='relative inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.15] bg-white/[0.08] px-3 py-2 text-sm font-medium text-white/[0.92] backdrop-blur-sm focus-visible:outline-white'
                 aria-label={`Ir al carrito con ${totalItems} productos`}
               >
                 <span className='relative inline-flex h-6 w-6 shrink-0 items-center justify-center'>
@@ -115,7 +121,7 @@ export function SiteHeader() {
                     className={[
                       'brand-badge-cart pointer-events-none absolute right-0 top-0 inline-flex h-4 min-w-4 translate-x-1/3 -translate-y-1/3 items-center justify-center rounded-full px-1 text-[10px] font-bold leading-none shadow-sm',
                       totalItems > 0
-                        ? 'bg-red-600 text-white-900'
+                        ? 'bg-red-600 text-white'
                         : 'bg-white/90 text-[var(--brand-600)]',
                     ].join(' ')}
                   >
@@ -131,7 +137,7 @@ export function SiteHeader() {
             <nav aria-label='Categorías' className='w-full overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
               <ul className='flex min-w-max items-center gap-1.5 pr-3 sm:min-w-0 sm:flex-wrap sm:justify-center'>
                 <li className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm hover:border-white/[0.22] hover:bg-white/[0.14] hover:text-white'>
-                  <Link href='/' className={getLinkClassName(pathname, '/')}>
+                  <Link href='/' className={getLinkClassName(pathname, '/', selectedCategory)}>
                     Inicio
                   </Link>
                 </li>
@@ -143,7 +149,7 @@ export function SiteHeader() {
                   >
                     <Link
                       href={category.href}
-                      className={getLinkClassName(pathname, category.href)}
+                      className={getLinkClassName(pathname, category.href, selectedCategory)}
                     >
                       {category.label}
                     </Link>

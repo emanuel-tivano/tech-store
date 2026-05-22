@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { CATEGORY_LABELS } from '@/lib/catalog-taxonomy';
+import { formatUnitAvailability, pluralize } from '@/lib/copy';
 import { ProductDetailActions } from '@/features/product-detail/product-detail-actions';
 import type { ProductDetailDTO } from '@/types';
 
@@ -68,7 +69,9 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
               Disponibilidad
             </p>
-            <p className="mt-2 text-lg font-semibold text-slate-950">{product.stock} unidades</p>
+            <p className="mt-2 text-lg font-semibold text-slate-950">
+              {product.stock} {pluralize(product.stock, 'unidad')}
+            </p>
             <p className="mt-1 text-sm text-slate-500">
               {product.stock > 0 ? 'Listo para sumar al carrito' : 'Volvé a consultar pronto'}
             </p>
@@ -87,8 +90,8 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
             </p>
             <p className="mt-1 text-sm text-slate-500">
               {product.freeShipment
-                ? 'Disponible para compras seleccionadas.'
-                : 'Consultá condiciones al finalizar la compra.'}
+                ? 'Este producto incluye envío gratis.'
+                : 'El costo de envío se informa en el checkout.'}
             </p>
           </div>
         </div>
@@ -140,12 +143,14 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
                   </p>
                   <p className="mt-1">
                     {product.freeShipment
-                      ? 'Se muestra antes de finalizar la compra.'
-                      : 'El costo de envío se define según tu ubicación.'}
+                      ? 'Este producto incluye envío gratis.'
+                      : 'El costo de envío se informa en el checkout.'}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                  <p className="font-semibold text-slate-900">{product.stock} unidades disponibles</p>
+                  <p className="font-semibold text-slate-900">
+                    {formatUnitAvailability(product.stock)}
+                  </p>
                   <p className="mt-1">
                     {product.stock > 0
                       ? 'Sumá la cantidad que necesitás y actualizá tu carrito cuando quieras.'

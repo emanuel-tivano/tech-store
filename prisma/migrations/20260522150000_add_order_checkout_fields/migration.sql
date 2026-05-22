@@ -1,0 +1,15 @@
+ALTER TABLE "orders"
+ADD COLUMN "shippingAddress" TEXT NOT NULL DEFAULT '',
+ADD COLUMN "shippingCity" TEXT NOT NULL DEFAULT '',
+ADD COLUMN "shippingProvince" TEXT NOT NULL DEFAULT '',
+ADD COLUMN "shippingPostalCode" TEXT NOT NULL DEFAULT '',
+ADD COLUMN "deliveryMethod" TEXT NOT NULL DEFAULT '',
+ADD COLUMN "paymentMethod" TEXT NOT NULL DEFAULT '';
+
+ALTER TABLE "orders"
+ALTER COLUMN "shippingAddress" DROP DEFAULT,
+ALTER COLUMN "shippingCity" DROP DEFAULT,
+ALTER COLUMN "shippingProvince" DROP DEFAULT,
+ALTER COLUMN "shippingPostalCode" DROP DEFAULT,
+ALTER COLUMN "deliveryMethod" DROP DEFAULT,
+ALTER COLUMN "paymentMethod" DROP DEFAULT;

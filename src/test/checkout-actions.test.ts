@@ -36,6 +36,12 @@ describe('createOrderAction', () => {
         phone: '1234',
         email: 'tomas@example.com',
       },
+      shippingAddress: 'Av. Siempre Viva 123',
+      shippingCity: 'CABA',
+      shippingProvince: 'Buenos Aires',
+      shippingPostalCode: '1425',
+      deliveryMethod: 'home-delivery',
+      paymentMethod: 'credit-card',
       items: [{ id: 'prod-1', quantity: 1 }],
     });
 
@@ -63,6 +69,12 @@ describe('createOrderAction', () => {
         phone: '',
         email: 'invalido',
       },
+      shippingAddress: '',
+      shippingCity: '',
+      shippingProvince: '',
+      shippingPostalCode: '',
+      deliveryMethod: 'home-delivery',
+      paymentMethod: 'credit-card',
       items: [],
     });
 
@@ -85,6 +97,12 @@ describe('createOrderAction', () => {
         phone: '1234',
         email: 'tomas@example.com',
       },
+      shippingAddress: 'Av. Siempre Viva 123',
+      shippingCity: 'CABA',
+      shippingProvince: 'Buenos Aires',
+      shippingPostalCode: '1425',
+      deliveryMethod: 'home-delivery',
+      paymentMethod: 'credit-card',
       items: [{ id: 'prod-1', quantity: 1 }],
     });
 

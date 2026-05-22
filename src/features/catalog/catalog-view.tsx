@@ -1,6 +1,7 @@
 import { CatalogControls } from '@/features/catalog/catalog-controls';
 import { PageState } from '@/components/page-state';
 import { ProductGrid } from '@/components/product-grid';
+import { formatProductAvailability } from '@/lib/copy';
 import type { CatalogState } from '@/lib/catalog-query';
 import type { Category, ProductCardDTO } from '@/types';
 
@@ -39,9 +40,7 @@ export function CatalogView({
               {supportingText}
             </p>
           ) : null}
-          <p className="text-sm font-medium text-slate-500">
-            {state.resultCount} producto{state.resultCount === 1 ? '' : 's'} disponibles
-          </p>
+          <p className="text-sm font-medium text-slate-500">{formatProductAvailability(state.resultCount)}</p>
         </div>
       </div>
 

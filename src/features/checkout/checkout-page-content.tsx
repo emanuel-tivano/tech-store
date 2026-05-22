@@ -7,6 +7,7 @@ import { PageState } from '@/components/page-state';
 import { TrustSignals } from '@/components/trust-signals';
 import { useCart } from '@/context/cart-context';
 import { createOrderAction } from '@/features/checkout/actions';
+import { formatCheckoutReviewSummary, formatProductCount, pluralize } from '@/lib/copy';
 
 import { deliveryOptions, paymentOptions } from './options';
 import { CHECKOUT_FREE_SHIPPING_THRESHOLD, getCheckoutSummary } from './summary';
@@ -185,6 +186,11 @@ export function CheckoutPageContent() {
       return;
     }
 
+    if (!values.deliveryMethod || !values.paymentMethod) {
+      setStatus('error');
+      return;
+    }
+
     setStatus('loading');
 
     const buyerName = splitBuyerName(values.fullName);
@@ -195,6 +201,12 @@ export function CheckoutPageContent() {
         phone: normalizePhone(values.phone),
         email: values.email.trim().toLowerCase(),
       },
+      shippingAddress: values.address.trim(),
+      shippingCity: values.city.trim(),
+      shippingProvince: values.province.trim(),
+      shippingPostalCode: values.postalCode.trim().toUpperCase(),
+      deliveryMethod: values.deliveryMethod,
+      paymentMethod: values.paymentMethod,
       items: cart.items.map((item) => ({
         id: item.id,
         quantity: item.quantity,
@@ -398,7 +410,7 @@ export function CheckoutPageContent() {
                   </p>
                   <p className="mt-1">
                     {formErrorCount > 0
-                      ? `${formErrorCount} campo(s) requieren corrección.`
+                      ? `${formErrorCount} ${pluralize(formErrorCount, 'campo')} ${pluralize(formErrorCount, 'requiere', 'requieren')} corrección.`
                       : errors.cart}
                   </p>
                 </div>
@@ -760,7 +772,7 @@ export function CheckoutPageContent() {
               </h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 {hasItems
-                  ? `${summary.itemCount} producto(s) y ${summary.totalUnits} unidad(es) listas para registrar.`
+                  ? formatCheckoutReviewSummary(summary.itemCount, summary.totalUnits)
                   : 'Tu carrito está vacío.'}
               </p>
             </div>
@@ -804,8 +816,8 @@ export function CheckoutPageContent() {
 
                   {summary.limitedStockItems.length > 0 ? (
                     <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                      Hay {summary.limitedStockItems.length} producto(s) con stock limitado en tu
-                      pedido.
+                      Hay {formatProductCount(summary.limitedStockItems.length)} con stock limitado
+                      en tu pedido.
                     </div>
                   ) : null}
 
@@ -880,20 +892,21 @@ export function CheckoutPageContent() {
         title="Confianza en el checkout"
         items={[
           {
-            title: 'Compra segura',
-            description: 'Los datos visibles del pedido se revisan antes de crear la orden y el servidor vuelve a validar stock y precios.',
+            title: 'Compra simulada segura',
+            description: 'Revisá cantidades, stock y total antes de confirmar la orden.',
           },
           {
             title: 'Pago simulado',
-            description: 'Esta etapa representa una compra realista para portfolio, sin prometer una pasarela integrada que no existe.',
+            description:
+              'Esta etapa representa una compra realista para portfolio, sin prometer una pasarela integrada que no existe.',
           },
           {
-            title: 'Datos protegidos',
-            description: 'El formulario usa validación clara y un flujo simple para reducir errores antes de confirmar.',
+            title: 'Envío calculado en checkout',
+            description: 'El costo final del envío aparece cuando elegís el método de entrega.',
           },
           {
-            title: 'Soporte y confirmación',
-            description: 'En una integración real, la orden podría confirmarse por email o soporte manual sin cambiar la experiencia del usuario.',
+            title: 'Soporte ante dudas sobre tu compra',
+            description: 'La demo mantiene validaciones y contexto suficiente para revisar el pedido con criterio.',
           },
         ]}
       />

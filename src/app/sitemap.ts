@@ -4,6 +4,7 @@ import { readCategorySlugs } from '@/lib/categories-read';
 import { getCanonicalUrl } from '@/lib/metadata';
 import { readProductSlugs } from '@/lib/products-read';
 
+// Sitemap entries are generated from Prisma data at request time in this demo environment.
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

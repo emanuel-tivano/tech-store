@@ -1,5 +1,6 @@
 import '@/styles/globals.css';
 
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 import { JsonLd } from '@/components/json-ld';
@@ -16,16 +17,12 @@ export const metadata: Metadata = {
   },
   description: storefrontMetadata.defaultDescription,
   applicationName: storefrontMetadata.siteName,
-  alternates: {
-    canonical: '/',
-  },
   openGraph: {
     type: 'website',
     locale: 'es_AR',
     siteName: storefrontMetadata.siteName,
     title: storefrontMetadata.siteName,
     description: storefrontMetadata.defaultDescription,
-    url: '/',
   },
   twitter: {
     card: 'summary',
@@ -55,7 +52,9 @@ export default function RootLayout({
         <JsonLd data={organizationJsonLd} />
         <Providers>
           <div className="min-h-screen bg-slate-100">
-            <SiteHeader />
+            <Suspense fallback={<SiteHeaderFallback />}>
+              <SiteHeader />
+            </Suspense>
             <main className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-6 lg:px-8">
               {children}
             </main>
@@ -63,5 +62,16 @@ export default function RootLayout({
         </Providers>
       </body>
     </html>
+  );
+}
+
+function SiteHeaderFallback() {
+  return (
+    <div
+      aria-hidden="true"
+      className="brand-header border-b border-slate-200/70 shadow-md shadow-slate-950/5"
+    >
+      <div className="mx-auto h-[145px] w-full max-w-6xl px-3 sm:px-6 lg:px-8" />
+    </div>
   );
 }

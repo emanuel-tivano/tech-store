@@ -6,12 +6,14 @@ import { JsonLd } from '@/components/json-ld';
 import { TrustSignals } from '@/components/trust-signals';
 import { CatalogView } from '@/features/catalog/catalog-view';
 import { buildCatalogState, getCatalogHeading } from '@/lib/catalog-query';
+import { formatProductCount } from '@/lib/copy';
 import { readCategorySeoBySlug } from '@/lib/categories-read';
 import { CATEGORY_LABELS } from '@/lib/catalog-taxonomy';
 import { readProductCardsByCategory } from '@/lib/products-read';
 import { buildMissingMetadata, buildStorefrontMetadata, getCanonicalUrl } from '@/lib/metadata';
 import type { Category } from '@/types';
 
+// Prisma-backed category pages are rendered on demand in this demo environment.
 export const dynamic = 'force-dynamic';
 
 interface CategoryPageProps {
@@ -27,13 +29,13 @@ export async function generateMetadata({
 
   if (!category) {
     return buildMissingMetadata({
-      title: 'Categoria no encontrada',
-      description: 'La categoria solicitada no esta disponible en este momento.',
+      title: 'Categoría no encontrada',
+      description: 'La categoría solicitada no está disponible en este momento.',
     });
   }
 
   const products = await readProductCardsByCategory(category.slug);
-  const productCountLabel = `${products.length} producto${products.length === 1 ? '' : 's'}`;
+  const productCountLabel = formatProductCount(products.length);
   const description =
     category.description?.trim() ||
     `Encontrá ${productCountLabel} en ${category.name} para gaming, trabajo y productividad.`;
@@ -110,15 +112,15 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             description: 'El catálogo agrupa productos activos con información clara de precio, stock y envío.',
           },
           {
-            title: 'Envíos informados',
-            description: 'La tienda destaca cuándo hay envío gratis y comunica condiciones de entrega sin sobreprometer.',
+            title: 'Envío calculado en checkout',
+            description: 'La tienda destaca cuándo hay envío gratis y comunica el resto del costo al avanzar.',
           },
           {
-            title: 'Compra revisable',
-            description: 'Podés ajustar tu selección desde el carrito antes de pasar al checkout.',
+            title: 'Compra simulada segura',
+            description: 'Podés revisar cantidades y stock desde el carrito antes de pasar al checkout.',
           },
           {
-            title: 'Soporte visible',
+            title: 'Soporte ante dudas sobre tu compra',
             description: 'La sección de ayuda y el flujo actual facilitan resolver dudas antes de confirmar la orden.',
           },
         ]}

@@ -1,5 +1,4 @@
-export type DeliveryMethod = 'home-delivery' | 'pickup-point' | 'store-pickup';
-export type PaymentMethod = 'credit-card' | 'bank-transfer' | 'cash-on-pickup';
+import type { DeliveryMethod, PaymentMethod } from '@/types';
 
 export interface CheckoutFormValues {
   fullName: string;

@@ -7,6 +7,12 @@ export const createOrderInputSchema = z.object({
     phone: z.string().trim().min(1),
     email: z.email().trim(),
   }),
+  shippingAddress: z.string().trim().min(1),
+  shippingCity: z.string().trim().min(1),
+  shippingProvince: z.string().trim().min(1),
+  shippingPostalCode: z.string().trim().min(1),
+  deliveryMethod: z.enum(['home-delivery', 'pickup-point', 'store-pickup']),
+  paymentMethod: z.enum(['credit-card', 'bank-transfer', 'cash-on-pickup']),
   items: z.array(
     z.object({
       id: z.string().min(1),

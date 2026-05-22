@@ -22,7 +22,7 @@ export function ProductCard({ product }: ProductCardProps) {
     <article className='h-full'>
       <Link
         href={`/products/${product.slug}`}
-        className='group block h-full text-inherit no-underline'
+        className='group block h-full rounded-2xl text-inherit no-underline focus-visible:outline-[var(--brand-500)]'
       >
         <div className='surface-card card-hover flex h-full flex-col overflow-hidden rounded-2xl border-slate-200/80 bg-white'>
           <div className='border-b border-slate-100 bg-linear-to-b from-slate-50 to-white p-3 sm:p-5'>
@@ -94,7 +94,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className='mt-auto flex flex-col gap-3'>
               <div className='flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-end min-[430px]:justify-between'>
                 <div className='space-y-1'>
-                  <span className='whitespace-nowrap text-xl font-semibold tracking-tight text-slate-950 min-[390px]:text-lg sm:text-2xl'>
+                  <span className='whitespace-nowrap text-xl font-semibold tracking-tight text-slate-950 sm:text-2xl'>
                     $ {currencyFormatter.format(product.price)}
                   </span>
                 </div>

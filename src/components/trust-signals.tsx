@@ -10,20 +10,20 @@ interface TrustSignalsProps {
 
 const defaultTrustSignals: TrustSignal[] = [
   {
-    title: 'Compra segura',
-    description: 'Flujo de compra simple para revisar productos, cantidades y orden antes de confirmar.',
+    title: 'Compra simulada segura',
+    description: 'Revisá cantidades y stock antes de confirmar la orden.',
   },
   {
-    title: 'Envíos seleccionados',
-    description: 'Algunos productos cuentan con envío gratis y el resto muestra condiciones de entrega al avanzar.',
+    title: 'Envío calculado en checkout',
+    description: 'Algunos productos incluyen envío gratis y el resto informa el costo al avanzar al checkout.',
   },
   {
-    title: 'Soporte y seguimiento',
-    description: 'Podés revisar ayuda, contacto y estado general del pedido desde el flujo actual de la tienda.',
+    title: 'Soporte ante dudas sobre tu compra',
+    description: 'Podés revisar ayuda y contexto del pedido desde el flujo actual de la tienda.',
   },
   {
-    title: 'Cambios y devoluciones',
-    description: 'La experiencia está pensada para comunicar políticas claras sin promesas exageradas.',
+    title: 'Pago simulado para portfolio',
+    description: 'La experiencia aclara que no procesa cargos reales ni promete integraciones inexistentes.',
   },
 ];
 

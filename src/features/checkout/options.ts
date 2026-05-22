@@ -1,4 +1,4 @@
-import type { DeliveryMethod, PaymentMethod } from './validation';
+import type { DeliveryMethod, PaymentMethod } from '@/types';
 
 export const deliveryOptions: Array<{
   value: DeliveryMethod;

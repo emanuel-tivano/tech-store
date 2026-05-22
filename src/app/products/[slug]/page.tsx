@@ -7,6 +7,7 @@ import { TrustSignals } from '@/components/trust-signals';
 import { ProductGrid } from '@/components/product-grid';
 import { ProductDetailView } from '@/features/product-detail/product-detail-view';
 import { CATEGORY_LABELS } from '@/lib/catalog-taxonomy';
+import { pluralize } from '@/lib/copy';
 import {
   buildMissingMetadata,
   buildStorefrontMetadata,
@@ -16,6 +17,7 @@ import {
 } from '@/lib/metadata';
 import { readProductCardsByCategory, readProductDetailBySlug, readProductSeoBySlug } from '@/lib/products-read';
 
+// Product details depend on live Prisma reads in the current demo setup.
 export const dynamic = 'force-dynamic';
 
 interface ProductPageProps {
@@ -37,7 +39,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const shippingLabel = product.freeShipment ? 'con envío gratis' : 'con opciones de entrega';
   const stockLabel =
     product.stock > 0
-      ? `${product.stock} unidad${product.stock === 1 ? '' : 'es'} disponibles`
+      ? `${product.stock} ${pluralize(product.stock, 'unidad')} ${pluralize(product.stock, 'disponible')}`
       : 'sin stock por el momento';
 
   return buildStorefrontMetadata({
@@ -136,27 +138,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="mt-6 grid gap-6">
         <TrustSignals
           title="Compra con información clara"
-          items={[
-            {
-              title: product.freeShipment ? 'Envío gratis disponible' : 'Entrega informada',
-              description: product.freeShipment
-                ? 'Este producto participa del beneficio de envío gratis dentro del flujo actual.'
-                : 'La tienda muestra condiciones de entrega sin prometer tiempos ni costos irreales.',
-            },
-            {
-              title: 'Compra segura',
-              description: 'El flujo permite revisar stock, cantidad y resumen antes de registrar la orden.',
-            },
-            {
-              title: 'Soporte y ayuda',
-              description: 'La sección de ayuda y el carrito acompañan la compra para resolver dudas frecuentes.',
-            },
-            {
-              title: 'Cambios y devoluciones',
-              description: 'La experiencia está pensada para comunicar políticas prudentes y una compra más confiable.',
-            },
-          ]}
-        />
+        items={[
+          {
+            title: product.freeShipment ? 'Envío gratis informado' : 'Envío calculado en checkout',
+            description: product.freeShipment
+                ? 'Este producto incluye envío gratis.'
+                : 'El costo de envío se informa en el checkout.',
+          },
+          {
+            title: 'Compra simulada segura',
+            description: 'Revisá cantidades y stock antes de confirmar la orden.',
+          },
+          {
+            title: 'Soporte ante dudas',
+            description: 'La sección de ayuda y el carrito acompañan la compra si necesitás contexto adicional.',
+          },
+          {
+            title: 'Pago simulado para portfolio',
+            description: 'La experiencia no promete una pasarela real ni tiempos logísticos que no existen.',
+          },
+        ]}
+      />
 
         {relatedProducts.length > 0 ? (
           <section className="flex flex-col gap-4">

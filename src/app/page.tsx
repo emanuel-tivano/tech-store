@@ -3,15 +3,17 @@ import type { Metadata } from 'next';
 import { JsonLd } from '@/components/json-ld';
 import { TrustSignals } from '@/components/trust-signals';
 import { buildCatalogState, getCatalogHeading } from '@/lib/catalog-query';
+import { formatProductCount } from '@/lib/copy';
 import { readProductCards } from '@/lib/products-read';
 import { CatalogView } from '@/features/catalog/catalog-view';
 import { buildStorefrontMetadata, storefrontMetadata } from '@/lib/metadata';
 
+// Prisma-backed catalog data is resolved at request time in this demo environment.
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   const products = await readProductCards();
-  const productCountLabel = `${products.length} producto${products.length === 1 ? '' : 's'}`;
+  const productCountLabel = formatProductCount(products.length);
   const featuredProduct = products[0];
 
   return buildStorefrontMetadata({

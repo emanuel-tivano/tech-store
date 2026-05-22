@@ -1,20 +1,30 @@
+import type { Metadata } from 'next';
+
+import { buildStorefrontMetadata } from '@/lib/metadata';
+
 const faqs = [
   {
     question: '¿Cuáles son las opciones de envío disponibles?',
     answer:
-      'Ofrecemos envío estándar y express. Los costos y tiempos se confirman durante el checkout.',
+      'La demo incluye envío a domicilio, retiro en punto de entrega y retiro acordado. El costo se calcula en el checkout simulado.',
   },
   {
-    question: '¿Cómo puedo seguir mi pedido?',
+    question: '¿Qué pasa después de confirmar el pedido?',
     answer:
-      'Una vez enviada la orden vas a recibir una confirmación con el identificador de compra.',
+      'La orden queda registrada en esta demo de portfolio y se muestra una confirmación en pantalla. No hay seguimiento logístico ni emails reales.',
   },
   {
-    question: '¿Cuál es la política de devolución?',
+    question: '¿El pago es real?',
     answer:
-      'Aceptamos devoluciones dentro de los 30 días para productos en condiciones originales.',
+      'No. El checkout representa un flujo más creíble para portfolio, pero no procesa cobros ni integra una pasarela real.',
   },
 ];
+
+export const metadata: Metadata = buildStorefrontMetadata({
+  title: 'Ayuda y preguntas frecuentes',
+  description: 'Preguntas frecuentes sobre el funcionamiento de esta demo ecommerce de portfolio, envíos simulados y proceso de compra.',
+  pathname: '/help',
+});
 
 export default function HelpPage() {
   return (
@@ -22,7 +32,7 @@ export default function HelpPage() {
       <div>
         <h1 className="mb-2 text-3xl font-semibold">Preguntas frecuentes</h1>
         <p className="text-slate-600">
-          Información general sobre compras, envíos y devoluciones.
+          Información general sobre el flujo de compra, envío y validaciones de esta demo.
         </p>
       </div>
 

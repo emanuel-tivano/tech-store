@@ -61,6 +61,12 @@ model Order {
   customerName  String
   customerEmail String
   customerPhone String?
+  shippingAddress String
+  shippingCity    String
+  shippingProvince String
+  shippingPostalCode String
+  deliveryMethod String
+  paymentMethod  String
   status        OrderStatus @default(PENDING)
   total         Decimal     @db.Decimal(10, 2)
 

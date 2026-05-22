@@ -26,7 +26,16 @@ export async function createOrder(input: unknown): Promise<{ id: string }> {
     throw new CreateOrderError('Los datos de la orden no son válidos.');
   }
 
-  const { buyer, items } = parsedInput.data;
+  const {
+    buyer,
+    deliveryMethod,
+    items,
+    paymentMethod,
+    shippingAddress,
+    shippingCity,
+    shippingPostalCode,
+    shippingProvince,
+  } = parsedInput.data;
   const productIds = [...new Set(items.map((item) => item.id))];
 
   if (productIds.length !== items.length) {
@@ -103,6 +112,12 @@ export async function createOrder(input: unknown): Promise<{ id: string }> {
         customerName: getCustomerName(buyer),
         customerEmail: buyer.email,
         customerPhone: buyer.phone,
+        shippingAddress,
+        shippingCity,
+        shippingProvince,
+        shippingPostalCode,
+        deliveryMethod,
+        paymentMethod,
         total,
         items: {
           create: orderItems,
