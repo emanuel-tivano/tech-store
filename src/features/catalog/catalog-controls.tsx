@@ -30,11 +30,11 @@ export function CatalogControls({
 }: CatalogControlsProps) {
   return (
     <section className="surface-card rounded-3xl border-slate-200/80">
-      <div className="flex flex-col gap-5 p-5 sm:p-6">
+      <div className="flex flex-col gap-5 p-5 sm:p-6 xl:p-7">
         <form action={basePath} className="grid gap-4">
           <input type="hidden" name="q" value={state.query} />
 
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:gap-5">
             {categoryFilterEnabled ? (
               <div className="grid gap-1.5">
                 <label htmlFor="catalog-category" className="form-label">
@@ -109,8 +109,8 @@ export function CatalogControls({
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div className="grid gap-3 sm:grid-cols-2">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[24rem]">
               <label className="inline-flex min-h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
                 <input
                   type="checkbox"

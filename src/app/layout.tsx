@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   },
   description: storefrontMetadata.defaultDescription,
   applicationName: storefrontMetadata.siteName,
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'es_AR',
@@ -57,7 +62,7 @@ export default function RootLayout({
             <Suspense fallback={<SiteHeaderFallback />}>
               <SiteHeader />
             </Suspense>
-            <main className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-6 lg:px-8">
+            <main className="mx-auto w-full max-w-[1500px] px-3 py-4 sm:px-6 xl:px-8">
               {children}
             </main>
           </div>
@@ -73,7 +78,7 @@ function SiteHeaderFallback() {
       aria-hidden="true"
       className="brand-header border-b border-slate-200/70 shadow-md shadow-slate-950/5"
     >
-      <div className="mx-auto h-[145px] w-full max-w-6xl px-3 sm:px-6 lg:px-8" />
+      <div className="mx-auto h-[145px] w-full max-w-[1500px] px-3 sm:px-6 xl:px-8" />
     </div>
   );
 }

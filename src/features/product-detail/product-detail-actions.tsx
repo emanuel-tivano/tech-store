@@ -34,58 +34,60 @@ export function ProductDetailActions({ product }: ProductDetailActionsProps) {
   }, [maxQuantity]);
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5">
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+    <div className="rounded-[1.6rem] border border-slate-200/90 bg-white p-5 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.28)] sm:px-6">
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
             Compra rápida
           </p>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm leading-6 text-slate-600">
             Elegí la cantidad y agregá el producto al carrito sin salir de esta página.
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <div className="w-full sm:max-w-36">
-            <label htmlFor="quantity" className="form-label">
-              Cantidad
-            </label>
-            <input
-              id="quantity"
-              className="input-base min-h-12 text-base"
-              type="number"
-              min={isOutOfStock ? 0 : 1}
-              max={maxQuantity}
-              value={isOutOfStock ? 0 : quantity}
+        <div className="rounded-2xl border border-slate-200/80 bg-slate-50/90 p-4 sm:p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+            <div className="w-full sm:max-w-36">
+              <label htmlFor="quantity" className="form-label">
+                Cantidad
+              </label>
+              <input
+                id="quantity"
+                className="input-base min-h-[3.25rem] rounded-xl border-slate-300/90 bg-white text-base shadow-none"
+                type="number"
+                min={isOutOfStock ? 0 : 1}
+                max={maxQuantity}
+                value={isOutOfStock ? 0 : quantity}
+                disabled={isActionDisabled}
+                onChange={(event) => {
+                  const nextValue = Number(event.target.value);
+                  const normalizedValue = Number.isNaN(nextValue)
+                    ? 1
+                    : Math.min(Math.max(nextValue, 1), maxQuantity);
+
+                  setQuantity(normalizedValue);
+                }}
+              />
+            </div>
+
+            <button
+              type="button"
+              className="btn-primary min-h-[3.25rem] w-full flex-1 rounded-xl px-5 text-base font-semibold shadow-[0_18px_35px_-20px_rgba(0,102,255,0.55)] sm:w-auto sm:min-w-[220px]"
+              data-testid="pdp-add-to-cart"
               disabled={isActionDisabled}
-              onChange={(event) => {
-                const nextValue = Number(event.target.value);
-                const normalizedValue = Number.isNaN(nextValue)
-                  ? 1
-                  : Math.min(Math.max(nextValue, 1), maxQuantity);
-
-                setQuantity(normalizedValue);
-              }}
-            />
+              onClick={() => addItem(mapProductDetailToCartLineInput(product), quantity)}
+            >
+              {isPendingAvailability
+                ? 'Actualizando disponibilidad'
+                : isOutOfStock
+                  ? 'No disponible por ahora'
+                  : 'Agregar al carrito'}
+            </button>
           </div>
-
-          <button
-            type="button"
-            className="btn-primary min-h-12 flex-1 sm:flex-none sm:px-6"
-            data-testid="pdp-add-to-cart"
-            disabled={isActionDisabled}
-            onClick={() => addItem(mapProductDetailToCartLineInput(product), quantity)}
-          >
-            {isPendingAvailability
-              ? 'Actualizando disponibilidad'
-              : isOutOfStock
-                ? 'No disponible por ahora'
-                : 'Agregar al carrito'}
-          </button>
         </div>
 
         <div className="flex flex-col gap-2 text-sm">
-          <p className={isActionDisabled ? 'font-medium text-slate-700' : 'text-slate-600'}>
+          <p className={isActionDisabled ? 'font-medium text-slate-700' : 'leading-6 text-slate-600'}>
             {isPendingAvailability
               ? 'Estamos validando la disponibilidad actual para que puedas agregar la cantidad correcta.'
               : product.stock <= 0

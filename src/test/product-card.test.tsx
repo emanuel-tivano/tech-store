@@ -29,7 +29,7 @@ describe('ProductCard', () => {
     expect(screen.getByRole('heading', { name: product.title })).toBeInTheDocument();
     expect(screen.getByText('$ 300')).toBeInTheDocument();
     expect(screen.getByText(/12 vendidos/)).toBeInTheDocument();
-    expect(screen.getByText('Ver producto')).toBeInTheDocument();
+    expect(screen.getByText('4.8 (25)')).toBeInTheDocument();
     expect(screen.getByRole('link')).toHaveAttribute('href', `/products/${product.slug}`);
   });
 });

@@ -18,6 +18,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const imageSrc = product.image || FALLBACK_PRODUCT_IMAGE;
   const isLowStock = product.stock > 0 && product.stock <= 5;
 
+  const soldLabel = product.qtySold >= 2 ? `${product.qtySold} vendidos` : null;
+
   return (
     <article className='h-full'>
       <Link
@@ -74,10 +76,13 @@ export function ProductCard({ product }: ProductCardProps) {
               <p className='line-clamp-2 text-sm leading-6 text-slate-500'>
                 {product.description}
               </p>
-              <div className='flex flex-wrap gap-2 text-xs font-medium'>
-                <span className='rounded-full bg-slate-100 px-2.5 py-1 text-slate-600'>
-                  {product.qtySold} vendidos
-                </span>
+              <div className='flex flex-wrap gap-2 text-sm font-medium'>
+                {soldLabel ? (
+                  <span className='text-xs font-medium text-slate-500'>
+                    {soldLabel}
+                  </span>
+                ) : null}
+
                 {isLowStock ? (
                   <span className='rounded-full bg-amber-50 px-2.5 py-1 text-amber-700'>
                     Últimas {product.stock} unidades
@@ -92,18 +97,18 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
 
             <div className='mt-auto flex flex-col gap-3'>
-              <div className='flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-end min-[430px]:justify-between'>
+              <div className='flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between'>
                 <div className='space-y-1'>
                   <span className='whitespace-nowrap text-xl font-semibold tracking-tight text-slate-950 sm:text-2xl'>
                     $ {currencyFormatter.format(product.price)}
                   </span>
                 </div>
 
-                <div className='flex items-center self-start rounded-full bg-amber-50 px-2.5 py-1 text-sm font-medium text-slate-700'>
+                <div className='flex items-center px-2.5 text-sm font-medium text-slate-700'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
-                    width='17'
-                    height='17'
+                    width='16'
+                    height='16'
                     viewBox='0 0 24 24'
                     fill='#0066ff'
                     stroke='#0066ff'
@@ -114,21 +119,11 @@ export function ProductCard({ product }: ProductCardProps) {
                     <path stroke='none' d='M0 0h24v24H0z' fill='none' />
                     <path d='M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245' />
                   </svg>
-                  <span className='ps-1'>
+                  <span className='ps-1 text-base'>
                     {product.rating} ({product.opinions})
                   </span>
                 </div>
               </div>
-
-              <span
-                className={`inline-flex min-h-11 w-full items-center justify-center rounded-xl px-4 text-sm font-semibold ${
-                  product.stock > 0
-                    ? 'bg-slate-950 text-white'
-                    : 'border border-slate-200 bg-slate-100 text-slate-500'
-                }`}
-              >
-                {product.stock > 0 ? 'Ver producto' : 'Ver detalles'}
-              </span>
             </div>
           </div>
         </div>

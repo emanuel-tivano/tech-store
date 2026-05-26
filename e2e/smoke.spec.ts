@@ -1,5 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 
+async function clickAndWaitForURL(page: Page, target: RegExp, link: ReturnType<Page['getByRole']>) {
+  await expect(link).toBeVisible();
+  await Promise.all([page.waitForURL(target), link.click()]);
+}
+
 async function openFirstPurchasableProduct(page: Page) {
   const productLinks = page.locator('a[href^="/products/"]');
   const productCount = await productLinks.count();
@@ -39,17 +44,14 @@ test('recorre home, PDP, carrito y checkout', async ({ page }) => {
   await expect(addToCartButton).toBeEnabled();
   await addToCartButton.click();
 
-  const cartLink = page.locator('a[href="/cart"]');
+  const cartLink = page.getByRole('link', { name: /ir al carrito con [1-9]\d* productos/i });
   await expect(cartLink).toHaveAttribute('aria-label', /ir al carrito con [1-9]\d* productos/i);
-  await cartLink.click();
-
-  await expect(page).toHaveURL(/\/cart$/);
+  await clickAndWaitForURL(page, /\/cart$/, cartLink);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.getByTestId('cart-line-item').first()).toContainText(productTitle ?? '');
 
-  await page.locator('a[href="/checkout"]').click();
-
-  await expect(page).toHaveURL(/\/checkout$/);
+  const checkoutLink = page.getByRole('link', { name: /completar compra/i });
+  await clickAndWaitForURL(page, /\/checkout$/, checkoutLink);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.getByRole('heading', { level: 2, name: /contacto, envío y pago/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /confirmar pedido/i })).toBeVisible();
