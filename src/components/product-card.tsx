@@ -7,14 +7,13 @@ import type { ProductCardDTO } from '@/types';
 
 interface ProductCardProps {
   product: ProductCardDTO;
+  priority?: boolean;
 }
 
 const currencyFormatter = new Intl.NumberFormat('es-AR');
-const PRODUCT_CARD_IMAGE_WIDTH = 320;
-const PRODUCT_CARD_IMAGE_HEIGHT = 240;
 const FALLBACK_PRODUCT_IMAGE = '/icons/LogoIcon.svg';
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, priority = false }: ProductCardProps) {
   const imageSrc = product.image || FALLBACK_PRODUCT_IMAGE;
   const isLowStock = product.stock > 0 && product.stock <= 5;
 
@@ -76,14 +75,15 @@ export function ProductCard({ product }: ProductCardProps) {
                 </div>}
             </div>
 
-            <div className='flex min-h-52 items-center justify-center sm:min-h-64'>
+            <div className='relative h-44 sm:h-56 md:h-60'>
               <Image
                 src={imageSrc}
                 alt={product.title}
-                width={PRODUCT_CARD_IMAGE_WIDTH}
-                height={PRODUCT_CARD_IMAGE_HEIGHT}
+                fill
                 sizes='(min-width: 1536px) 18rem, (min-width: 1280px) 20rem, (min-width: 640px) 45vw, 90vw'
-                className='h-44 w-full object-contain transition-transform duration-300 group-hover:scale-[1.03] sm:h-56 md:h-60'
+                loading={priority ? 'eager' : 'lazy'}
+                fetchPriority={priority ? 'high' : 'auto'}
+                className='object-contain transition-transform duration-300 group-hover:scale-[1.03]'
               />
             </div>
           </div>

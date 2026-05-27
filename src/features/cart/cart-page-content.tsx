@@ -12,8 +12,6 @@ const currencyFormatter = new Intl.NumberFormat('es-AR', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
-const CART_IMAGE_WIDTH = 144;
-const CART_IMAGE_HEIGHT = 112;
 const FALLBACK_PRODUCT_IMAGE = '/icons/LogoIcon.svg';
 
 export function CartPageContent() {
@@ -78,14 +76,13 @@ export function CartPageContent() {
                 data-testid="cart-line-item"
               >
                 <div className="flex flex-col gap-5 p-4 sm:p-5 lg:flex-row lg:items-center">
-                  <div className="flex min-h-32 items-center justify-center rounded-2xl bg-slate-50 p-4 lg:w-36 lg:flex-none">
+                  <div className="relative min-h-32 rounded-2xl bg-slate-50 p-4 lg:w-36 lg:flex-none">
                     <Image
                       src={imageSrc}
                       alt={item.title}
-                      width={CART_IMAGE_WIDTH}
-                      height={CART_IMAGE_HEIGHT}
+                      fill
                       sizes="(min-width: 1024px) 9rem, 40vw"
-                      className="max-h-28 w-full object-contain"
+                      className="object-contain p-4"
                     />
                   </div>
 

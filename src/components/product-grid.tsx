@@ -3,9 +3,13 @@ import type { ProductCardDTO } from '@/types';
 
 interface ProductGridProps {
   products: ProductCardDTO[];
+  prioritizeFirstImage?: boolean;
 }
 
-export function ProductGrid({ products }: ProductGridProps) {
+export function ProductGrid({
+  products,
+  prioritizeFirstImage = false,
+}: ProductGridProps) {
   const gridClassName =
     products.length === 1
       ? 'grid max-w-sm grid-cols-1 gap-4'
@@ -13,8 +17,12 @@ export function ProductGrid({ products }: ProductGridProps) {
 
   return (
     <div className={gridClassName}>
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+      {products.map((product, index) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          priority={prioritizeFirstImage && index === 0}
+        />
       ))}
     </div>
   );

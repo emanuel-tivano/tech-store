@@ -10,8 +10,6 @@ interface ProductDetailViewProps {
 }
 
 const currencyFormatter = new Intl.NumberFormat('es-AR');
-const PRODUCT_DETAIL_IMAGE_WIDTH = 900;
-const PRODUCT_DETAIL_IMAGE_HEIGHT = 900;
 const FALLBACK_PRODUCT_IMAGE = '/icons/LogoIcon.svg';
 
 function getSoldLabel(qtySold: number) {
@@ -25,9 +23,7 @@ function getSoldLabel(qtySold: number) {
 export function ProductDetailView({ product }: ProductDetailViewProps) {
   const imageSrc = product.image || FALLBACK_PRODUCT_IMAGE;
   const soldLabel = getSoldLabel(product.qtySold);
-  const deliveryTitle = product.freeShipment
-    ? 'Envío gratis'
-    : 'A coordinar';
+  const deliveryTitle = product.freeShipment ? 'Envío gratis' : 'A coordinar';
   const deliveryCopy = product.freeShipment
     ? 'Este producto ya incluye el beneficio de envío.'
     : 'Elegís el método de entrega al avanzar en checkout.';
@@ -40,9 +36,26 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
       <div className='lg:col-span-2'>
         <Link
           href={product.categoryId ? `/category/${product.categoryId}` : '/'}
-          className='btn-link gap-2 rounded-full border border-slate-200/80 bg-white px-3 py-1.5 text-sm text-slate-600 shadow-sm hover:border-slate-300 hover:text-slate-900'
+          className='btn-link rounded-full border border-slate-200/80 bg-white px-3 py-1.5 text-sm text-slate-600 shadow-sm hover:border-slate-300 hover:text-slate-900'
         >
-          <span aria-hidden='true'>←</span>
+          <span aria-hidden='true' className='me-1'>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              width='20'
+              height='20'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            >
+              <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+              <path d='M5 12l14 0' />
+              <path d='M5 12l4 4' />
+              <path d='M5 12l4 -4' />
+            </svg>
+          </span>
           Volver
         </Link>
       </div>
@@ -60,15 +73,14 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
             ) : null}
           </div>
 
-          <div className='flex min-h-[300px] items-center justify-center p-6 sm:min-h-[440px] sm:p-12'>
+          <div className='relative min-h-[300px] p-6 sm:min-h-[440px] sm:p-12'>
             <Image
               src={imageSrc}
               alt={product.title}
-              width={PRODUCT_DETAIL_IMAGE_WIDTH}
-              height={PRODUCT_DETAIL_IMAGE_HEIGHT}
+              fill
               sizes='(min-width: 1024px) 50vw, 100vw'
               priority
-              className='product-detail-image w-full object-contain'
+              className='product-detail-image object-contain'
             />
           </div>
         </div>

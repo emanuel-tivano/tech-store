@@ -38,6 +38,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         categoryFilterEnabled
         emptyDescription="Probá ajustar la búsqueda o limpiar filtros para volver a explorar todo el catálogo."
         heading={heading}
+        prioritizeFirstImage
         products={filteredProducts}
         searchEmptyDescription="No encontramos coincidencias con esa búsqueda. Probá otro término o ampliá los filtros."
         state={state}

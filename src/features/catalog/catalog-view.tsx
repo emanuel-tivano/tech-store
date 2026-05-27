@@ -11,6 +11,7 @@ interface CatalogViewProps {
   categoryFilterEnabled: boolean;
   emptyDescription: string;
   heading: string;
+  prioritizeFirstImage?: boolean;
   searchEmptyDescription?: string;
   state: CatalogState;
   supportingText?: string;
@@ -22,6 +23,7 @@ export function CatalogView({
   categoryFilterEnabled,
   emptyDescription,
   heading,
+  prioritizeFirstImage = false,
   searchEmptyDescription,
   state,
   supportingText,
@@ -65,7 +67,7 @@ export function CatalogView({
               <span className="font-semibold text-slate-700">&ldquo;{state.query}&rdquo;</span>.
             </p>
           ) : null}
-          <ProductGrid products={products} />
+          <ProductGrid products={products} prioritizeFirstImage={prioritizeFirstImage} />
         </>
       ) : null}
     </section>
