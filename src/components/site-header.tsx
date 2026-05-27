@@ -16,7 +16,6 @@ function getLinkClassName(
   const isCategoryLink = href.startsWith('/category/');
   const isActive =
     pathname === href ||
-    (href === '/' && pathname === '/' && !selectedCategory) ||
     (pathname === '/' &&
       isCategoryLink &&
       selectedCategory === href.slice('/category/'.length));
@@ -41,12 +40,17 @@ export function SiteHeader() {
     <header className='brand-header border-b border-slate-200/70 shadow-md shadow-slate-950/5'>
       <div className='mx-auto flex w-full max-w-[1500px] flex-col px-3 sm:px-6 xl:px-8'>
         <div className='flex flex-col gap-3 py-3'>
-          <div className='grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(360px,640px)_minmax(0,1fr)]'>
-            <div className='flex min-w-0 items-center gap-2'>
+          <div className='grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 lg:grid-cols-[minmax(220px,1fr)_minmax(360px,640px)_minmax(220px,1fr)]'>
+            <Link
+              href='/'
+              className='flex items-center justify-end gap-2 rounded-md text-lg font-semibold tracking-[-0.02em] text-white no-underline focus-visible:outline-white sm:text-2xl'
+              aria-label='Ir al inicio'
+            >
               <svg
+                aria-hidden='true'
                 xmlns='http://www.w3.org/2000/svg'
-                width='28'
-                height='28'
+                width='30'
+                height='30'
                 viewBox='0 0 24 24'
                 fill='none'
                 stroke='white'
@@ -61,31 +65,27 @@ export function SiteHeader() {
                 <path d='M15 16v4' />
               </svg>
 
-              <div className='min-w-0'>
-                <Link
-                  href='/'
-                  className='inline-flex max-w-full rounded-md text-lg font-semibold tracking-[-0.02em] text-white no-underline focus-visible:outline-white sm:text-2xl'
-                >
-                  <span className='truncate'>Periféricos de PC</span>
-                </Link>
-              </div>
-            </div>
-            <div className='order-3 col-span-2 min-w-0 lg:order-2 lg:col-span-1'>
+              <span className='hidden sm:inline sm:truncate'>
+                Periféricos de PC
+              </span>
+            </Link>
+            <div className='min-w-0 lg:col-span-1 lg:order-2'>
               <Suspense fallback={<HeaderSearchFallback />}>
                 <HeaderSearch />
               </Suspense>
             </div>
-            <div className='order-2 grid grid-cols-2 gap-2 justify-self-end lg:order-3'>
+            <div className='lg:order-3'>
               <Link
                 href='/cart'
-                className='relative inline-flex min-h-11 items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white/[0.92] sm focus-visible:outline-white'
+                className='relative inline-flex items-center justify-center gap-1 py-1 font-medium text-white/[0.92] focus-visible:outline-white'
                 aria-label={`Ir al carrito con ${totalItems} productos`}
               >
-                <span className='relative inline-flex h-6 w-6 shrink-0 items-center justify-center'>
+                <span className='relative inline-flex h-8 w-8 shrink-0 items-center justify-center'>
                   <svg
+                    aria-hidden='true'
                     xmlns='http://www.w3.org/2000/svg'
-                    width='24'
-                    height='24'
+                    width='30'
+                    height='30'
                     viewBox='0 0 24 24'
                     fill='none'
                     stroke='currentColor'
@@ -111,7 +111,8 @@ export function SiteHeader() {
                     {totalItems}
                   </span>
                 </span>
-                <span>Carrito</span>
+
+                <span className='hidden sm:inline text-lg'>Carrito</span>
               </Link>
             </div>
           </div>

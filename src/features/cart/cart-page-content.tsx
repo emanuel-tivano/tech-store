@@ -48,7 +48,7 @@ export function CartPageContent() {
 
   return (
     <section className="flex flex-col gap-6 sm:gap-8">
-      <div className="surface-card brand-tint-panel overflow-hidden rounded-3xl border-slate-200/80 px-5 py-8 sm:px-8 sm:py-10">
+      <div className="surface-card brand-tint-panel overflow-hidden rounded-3xl border-slate-200/80 px-5 pt-3 sm:px-8 sm:py-10">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-3">
             <p className="brand-eyebrow text-xs font-semibold uppercase tracking-[0.24em]">
@@ -61,28 +61,6 @@ export function CartPageContent() {
               <p className="mt-2 text-sm leading-7 text-slate-600 sm:text-base">
                 Confirmá productos, cantidades y subtotal antes de avanzar al checkout.
               </p>
-            </div>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Productos
-              </p>
-              <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
-                {totalItems}
-              </p>
-              <p className="mt-1 text-sm text-slate-500">Unidades en tu carrito</p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Total actual
-              </p>
-              <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
-                $ {currencyFormatter.format(totalPrice)}
-              </p>
-              <p className="mt-1 text-sm text-slate-500">Antes de costos finales</p>
             </div>
           </div>
         </div>
@@ -120,18 +98,17 @@ export function CartPageContent() {
                         <h2 className="mt-1 text-xl font-semibold tracking-tight text-slate-950">
                           {item.title}
                         </h2>
-                        <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
                       </div>
 
                       <div className="grid gap-3 md:grid-cols-3">
-                        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        <div className="flex flex-col align-center rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                          <p className="text-xs text-center font-semibold uppercase tracking-[0.18em] text-slate-400">
                             Cantidad
                           </p>
-                          <div className="mt-2 inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white">
+                          <div className="flex justify-center min-h-10 items-center rounded-full border border-slate-200 bg-white">
                             <button
                               type="button"
-                              className="min-h-11 min-w-11 px-3 py-2 text-base font-semibold text-slate-700 disabled:text-slate-300"
+                              className="min-h-10 min-w-10 px-3 py-2 text-base font-semibold text-slate-700 disabled:text-slate-300"
                               aria-label={`Disminuir cantidad de ${item.title}`}
                               disabled={item.quantity <= 1}
                               onClick={() => {
@@ -149,7 +126,7 @@ export function CartPageContent() {
                             </span>
                             <button
                               type="button"
-                              className="min-h-11 min-w-11 px-3 py-2 text-base font-semibold text-slate-700 disabled:text-slate-300"
+                              className="min-h-10 min-w-10 px-3 py-2 text-base font-semibold text-slate-700 disabled:text-slate-300"
                               aria-label={`Aumentar cantidad de ${item.title}`}
                               disabled={item.quantity >= item.stock}
                               onClick={() => {
@@ -165,9 +142,6 @@ export function CartPageContent() {
                               +
                             </button>
                           </div>
-                          <p className="mt-2 text-xs text-slate-500">
-                            Máximo disponible: {item.stock}
-                          </p>
                           {limitMessageProductId === item.id ? (
                             <p className="mt-1 text-xs font-medium text-amber-700" role="status">
                               Ya alcanzaste el stock disponible para este producto.
@@ -195,7 +169,7 @@ export function CartPageContent() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-3 lg:min-w-44 lg:items-end">
+                    <div className="flex gap-3 lg:min-w-44 lg:items-end">
                       <Link
                         href={`/products/${item.slug}`}
                         className="btn-secondary w-full lg:w-auto"

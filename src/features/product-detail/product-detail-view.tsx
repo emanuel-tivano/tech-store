@@ -159,15 +159,6 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
                   <p className='brand-eyebrow text-xs font-semibold uppercase tracking-[0.22em]'>
                     Detalle del producto
                   </p>
-                  <span
-                    className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold ${
-                      isAvailable
-                        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                        : 'border-slate-200 bg-slate-100 text-slate-600'
-                    }`}
-                  >
-                    {statusLabel}
-                  </span>
                 </div>
                 <div className='space-y-3'>
                   <h1 className='text-3xl font-semibold tracking-tight text-slate-950 sm:text-[2.6rem] sm:leading-[1.05]'>

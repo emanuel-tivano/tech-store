@@ -53,7 +53,27 @@ export function ProductCard({ product }: ProductCardProps) {
 
                   <span className='ms-1'>Envío gratis</span>
                 </div>
-              ) : null}
+              ) : 
+                <div className='inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-slate-900'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    width='20'
+                    height='20'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='1'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  >
+                    <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                    <path d='M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0' />
+                    <path d='M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0' />
+                    <path d='M5 17h-2v-11a1 1 0 0 1 1 -1h9v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5' />
+                  </svg>
+
+                  <span className='ms-1'>A coordinar</span>
+                </div>}
             </div>
 
             <div className='flex min-h-52 items-center justify-center sm:min-h-64'>
@@ -97,7 +117,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
 
             <div className='mt-auto flex flex-col gap-3'>
-              <div className='flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between'>
+              <div className='flex justify-between gap-3 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between'>
                 <div className='space-y-1'>
                   <span className='whitespace-nowrap text-xl font-semibold tracking-tight text-slate-950 sm:text-2xl'>
                     $ {currencyFormatter.format(product.price)}
