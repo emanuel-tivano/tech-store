@@ -128,7 +128,7 @@ export function SiteHeader() {
               className='w-full overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
             >
               <ul className='flex min-w-max items-center gap-1.5 pr-3 sm:min-w-0 sm:flex-wrap sm:justify-center'>
-                <li className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm md:hover:border-white/[0.22] md:hover:bg-white/[0.14] md:hover:text-white'>
+                <li className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium md:hover:border-white/[0.22] md:hover:bg-white/[0.14] md:hover:text-white'>
                   <Link
                     href='/'
                     className={getLinkClassName(
@@ -144,7 +144,7 @@ export function SiteHeader() {
                 {CATEGORY_NAV_ITEMS.map((category) => (
                   <li
                     key={category.href}
-                    className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm md:hover:border-white/[0.22] md:hover:bg-white/[0.14] md:hover:text-white'
+                    className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium md:hover:border-white/[0.22] md:hover:bg-white/[0.14] md:hover:text-white'
                   >
                     <Link
                       href={category.href}
@@ -159,7 +159,7 @@ export function SiteHeader() {
                   </li>
                 ))}
 
-                <li className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm md:hover:border-white/[0.22] md:hover:bg-white/[0.14] md:hover:text-white'>
+                <li className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium md:hover:border-white/[0.22] md:hover:bg-white/[0.14] md:hover:text-white'>
                   <Link
                     href='/help'
                     className={getLinkClassName(

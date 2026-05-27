@@ -28,27 +28,20 @@ describe('CatalogControls', () => {
       />,
     );
 
-    const toggle = screen.getByRole('button', { name: 'Ocultar filtros' });
+    const toggle = screen.getByRole('button', { name: 'Mostrar filtros' });
     const controls = document.getElementById('catalog-controls');
 
     expect(toggle).toHaveClass('md:hidden');
-    expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    expect(controls).toHaveClass('catalog-controls', 'block');
+    expect(controls).toHaveClass('catalog-controls', 'hidden', 'md:block');
 
     await user.click(toggle);
 
-    expect(screen.getByRole('button', { name: 'Mostrar filtros' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
-    expect(controls).toHaveClass('hidden', 'md:block');
-
-    await user.click(screen.getByRole('button', { name: 'Mostrar filtros' }));
-
-    expect(screen.getByRole('button', { name: 'Ocultar filtros' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
+    expect(screen.getByRole('button', { name: 'Ocultar filtros' })).toBeVisible();
     expect(controls).toHaveClass('block');
+
+    await user.click(screen.getByRole('button', { name: 'Ocultar filtros' }));
+
+    expect(screen.getByRole('button', { name: 'Mostrar filtros' })).toBeVisible();
+    expect(controls).toHaveClass('hidden', 'md:block');
   });
 });
