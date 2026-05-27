@@ -1,12 +1,15 @@
-import { FlatCompat } from '@eslint/eslintrc';
 import { defineConfig, globalIgnores } from 'eslint/config';
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
 
 export default defineConfig([
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  ...nextCoreWebVitals,
+  {
+    settings: {
+      react: {
+        version: '19.2',
+      },
+    },
+  },
   globalIgnores([
     '.next/**',
     'out/**',

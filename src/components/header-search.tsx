@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { buildCatalogSearchHref } from '@/lib/catalog-search';
@@ -12,7 +12,9 @@ export function HeaderSearch() {
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
 
   useEffect(() => {
-    setQuery(searchParams.get('q') ?? '');
+    startTransition(() => {
+      setQuery(searchParams.get('q') ?? '');
+    });
   }, [searchParams]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

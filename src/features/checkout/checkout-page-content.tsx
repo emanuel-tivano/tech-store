@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 
 import { PageState } from '@/components/page-state';
 import { TrustSignals } from '@/components/trust-signals';
@@ -97,14 +97,16 @@ export function CheckoutPageContent() {
   useEffect(() => {
     const storedValues = readCheckoutFormFromSessionStorage();
 
-    if (storedValues) {
-      setValues((currentValues) => ({
-        ...currentValues,
-        ...storedValues,
-      }));
-    }
+    startTransition(() => {
+      if (storedValues) {
+        setValues((currentValues) => ({
+          ...currentValues,
+          ...storedValues,
+        }));
+      }
 
-    setIsSessionStorageHydrated(true);
+      setIsSessionStorageHydrated(true);
+    });
   }, []);
 
   useEffect(() => {

@@ -3,6 +3,7 @@
 import React from 'react';
 import {
   createContext,
+  startTransition,
   useContext,
   useEffect,
   useMemo,
@@ -169,7 +170,9 @@ export function CartProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     const storedCart = parseCart(window.localStorage.getItem(STORAGE_KEY));
     dispatch({ type: 'HYDRATE', payload: storedCart });
-    setIsHydrated(true);
+    startTransition(() => {
+      setIsHydrated(true);
+    });
   }, []);
 
   useEffect(() => {

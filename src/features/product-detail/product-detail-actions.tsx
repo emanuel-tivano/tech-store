@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { useCart } from '@/context/cart-context';
 import { mapProductDetailToCartLineInput } from '@/lib/cart-line';
@@ -22,16 +22,9 @@ export function ProductDetailActions({ product }: ProductDetailActionsProps) {
   const isPendingAvailability = !isHydrated;
   const hasCartReservedStock = quantityInCart > 0;
   const isActionDisabled = isPendingAvailability || isOutOfStock;
-
-  useEffect(() => {
-    if (maxQuantity <= 0) {
-      return;
-    }
-
-    setQuantity((currentQuantity) =>
-      Math.min(Math.max(currentQuantity, 1), maxQuantity),
-    );
-  }, [maxQuantity]);
+  const normalizedQuantity = isOutOfStock
+    ? 0
+    : Math.min(Math.max(quantity, 1), maxQuantity);
 
   return (
     <div className="rounded-[1.6rem] border border-slate-200/90 bg-white p-5 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.28)] sm:px-6">
@@ -57,7 +50,7 @@ export function ProductDetailActions({ product }: ProductDetailActionsProps) {
                 type="number"
                 min={isOutOfStock ? 0 : 1}
                 max={maxQuantity}
-                value={isOutOfStock ? 0 : quantity}
+                value={normalizedQuantity}
                 disabled={isActionDisabled}
                 onChange={(event) => {
                   const nextValue = Number(event.target.value);
@@ -75,7 +68,7 @@ export function ProductDetailActions({ product }: ProductDetailActionsProps) {
               className="btn-primary min-h-[3.25rem] w-full flex-1 rounded-xl px-5 text-base font-semibold shadow-[0_18px_35px_-20px_rgba(0,102,255,0.55)] sm:w-auto sm:min-w-[220px]"
               data-testid="pdp-add-to-cart"
               disabled={isActionDisabled}
-              onClick={() => addItem(mapProductDetailToCartLineInput(product), quantity)}
+              onClick={() => addItem(mapProductDetailToCartLineInput(product), normalizedQuantity)}
             >
               {isPendingAvailability
                 ? 'Actualizando disponibilidad'

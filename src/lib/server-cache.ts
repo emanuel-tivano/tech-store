@@ -33,8 +33,8 @@ export function cacheRouteDataReader<Args extends unknown[], Result>(
 }
 
 export function revalidateCatalogData(): void {
-  revalidateTag(DATA_CACHE_TAGS.catalog);
-  revalidateTag(DATA_CACHE_TAGS.products);
-  revalidateTag(DATA_CACHE_TAGS.categories);
-  revalidateTag(DATA_CACHE_TAGS.sitemap);
+  revalidateTag(DATA_CACHE_TAGS.catalog, 'max');
+  revalidateTag(DATA_CACHE_TAGS.products, 'max');
+  revalidateTag(DATA_CACHE_TAGS.categories, 'max');
+  revalidateTag(DATA_CACHE_TAGS.sitemap, 'max');
 }
