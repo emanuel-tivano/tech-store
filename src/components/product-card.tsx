@@ -53,7 +53,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
                   <span className='ms-1'>Envío gratis</span>
                 </div>
               ) : 
-                <div className='inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-slate-900'>
+                <div className='inline-flex items-center rounded-full bg-slate-50 px-3 py-1 text-xs font-medium text-slate-900'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     width='20'

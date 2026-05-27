@@ -14,17 +14,22 @@ function getLinkClassName(
   selectedCategory?: string | null,
 ) {
   const isCategoryLink = href.startsWith('/category/');
-  const isActive =
-    pathname === href ||
-    (pathname === '/' &&
-      isCategoryLink &&
-      selectedCategory === href.slice('/category/'.length));
+  const isHomeLink = href === '/';
+  const isHelpLink = href === '/help';
+  const isActive = isHomeLink
+    ? pathname === '/'
+    : isHelpLink
+      ? pathname === '/help'
+      : pathname === href ||
+        (pathname === '/' &&
+          isCategoryLink &&
+          selectedCategory === href.slice('/category/'.length));
 
   return [
     'inline-flex items-center rounded-full border border-transparent px-3 py-1.5 text-sm font-medium transition-all duration-200',
     isActive
       ? 'bg-white text-[var(--brand-600)] shadow-sm shadow-slate-950/5'
-      : 'text-white hover:border-slate-200 hover:bg-white hover:text-[var(--brand-600)]',
+      : 'text-white md:hover:border-slate-200 md:hover:bg-white md:hover:text-[var(--brand-600)]',
   ].join(' ');
 }
 
@@ -123,7 +128,7 @@ export function SiteHeader() {
               className='w-full overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
             >
               <ul className='flex min-w-max items-center gap-1.5 pr-3 sm:min-w-0 sm:flex-wrap sm:justify-center'>
-                <li className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm hover:border-white/[0.22] hover:bg-white/[0.14] hover:text-white'>
+                <li className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm md:hover:border-white/[0.22] md:hover:bg-white/[0.14] md:hover:text-white'>
                   <Link
                     href='/'
                     className={getLinkClassName(
@@ -139,7 +144,7 @@ export function SiteHeader() {
                 {CATEGORY_NAV_ITEMS.map((category) => (
                   <li
                     key={category.href}
-                    className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm hover:border-white/[0.22] hover:bg-white/[0.14] hover:text-white'
+                    className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm md:hover:border-white/[0.22] md:hover:bg-white/[0.14] md:hover:text-white'
                   >
                     <Link
                       href={category.href}
@@ -154,7 +159,7 @@ export function SiteHeader() {
                   </li>
                 ))}
 
-                <li className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm hover:border-white/[0.22] hover:bg-white/[0.14] hover:text-white'>
+                <li className='rounded-full border border-white/[0.14] bg-white/[0.08] text-sm font-medium backdrop-blur-sm md:hover:border-white/[0.22] md:hover:bg-white/[0.14] md:hover:text-white'>
                   <Link
                     href='/help'
                     className={getLinkClassName(
