@@ -175,6 +175,48 @@ describe('CheckoutPageContent', () => {
     expect(window.sessionStorage.getItem(CHECKOUT_SESSION_STORAGE_KEY)).toBeNull();
   });
 
+  it('muestra un error seguro devuelto por el servidor y conserva el carrito', async () => {
+    const user = userEvent.setup();
+
+    createOrderActionMock.mockResolvedValue({
+      status: 'error',
+      code: 'INSUFFICIENT_STOCK',
+      message:
+        'No hay stock suficiente para uno o más productos. Revisá las cantidades del carrito.',
+    });
+
+    window.sessionStorage.setItem(
+      CHECKOUT_SESSION_STORAGE_KEY,
+      JSON.stringify({
+        fullName: 'Tomás Ibarra',
+        email: 'tomas@example.com',
+        phone: '+54 11 5555 5555',
+        address: 'Av. Cabildo 1234',
+        city: 'Buenos Aires',
+        province: 'Buenos Aires',
+        postalCode: '1425',
+        deliveryMethod: 'home-delivery',
+        paymentMethod: 'credit-card',
+      }),
+    );
+
+    renderCheckout();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Nombre completo')).toHaveValue('Tomás Ibarra');
+    });
+
+    await user.type(screen.getByLabelText('Confirmar email'), 'tomas@example.com');
+    await user.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+
+    expect(
+      await screen.findAllByText(
+        'No hay stock suficiente para uno o más productos. Revisá las cantidades del carrito.',
+      ),
+    ).not.toHaveLength(0);
+    expect(clearCartMock).not.toHaveBeenCalled();
+  });
+
   it('tolera fallos al guardar en sessionStorage', async () => {
     const user = userEvent.setup();
     const setItemSpy = vi

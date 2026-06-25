@@ -2,6 +2,7 @@
 
 Portfolio e-commerce storefront built with Next.js App Router, TypeScript, Tailwind CSS, Prisma, Neon PostgreSQL, and Zod. It demonstrates a realistic catalog, cart, and simulated checkout flow without claiming production commerce features such as real payments, shipping, authentication, or an admin dashboard.
 
+[![CI](https://github.com/emanuel-tivano/tech-store/actions/workflows/ci.yml/badge.svg)](https://github.com/emanuel-tivano/tech-store/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![React](https://img.shields.io/badge/React-19-149eca)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178c6)
@@ -52,25 +53,33 @@ The checkout does not trust client-submitted prices, stock, or product availabil
 
 That keeps the portfolio scope honest while still showing the core integrity pattern expected from a real commerce backend: the database is the source of truth, and stock changes are committed atomically with the order.
 
-## Technical highlights
+## Architecture decisions
 
 ### App Router and rendering
 
-The storefront uses App Router pages, layouts, server components, and server actions. Catalog and product routes are built around route-level metadata, SEO, and server-side reads rather than a purely client-driven storefront.
+Next.js App Router keeps routing, metadata, loading boundaries, and server-side catalog reads close to each route. Catalog and product pages remain Server Components; client components are limited to interactive state such as search controls, cart persistence, and checkout form behavior.
 
 The main catalog, category, product, and sitemap routes use timed revalidation. Catalog reads are wrapped through shared cache utilities so future cache and invalidation changes stay centralized.
 
-### Prisma + Neon PostgreSQL
+### Server-side checkout
+
+Checkout submits through a Server Action. The client provides customer data and product identifiers/quantities, but it does not decide final prices, availability, or stock. Known domain failures return stable error codes and safe Spanish messages; unexpected database failures stay behind a generic retry message.
+
+### Prisma + PostgreSQL
 
 Prisma is the data access layer for categories, products, inventory, and orders. Neon PostgreSQL stores the catalog and order model, while Prisma migrations keep schema changes explicit and reviewable.
 
-### Cart persistence
+### Price and stock integrity
 
-Cart state lives client-side and persists to `localStorage`, with guarded hydration to avoid overwriting an existing cart on first mount.
+Before creating an order, the server reloads products from PostgreSQL, rejects missing, inactive, duplicated, or insufficient-stock items, and recalculates totals from database prices. Order creation and stock decrements run in one Prisma transaction, with a conditional stock update to protect against concurrent purchases.
 
-### Checkout validation
+### Zod validation
 
-Checkout input is validated in the UI and validated again on the server through Zod before persistence. This keeps the form realistic without pretending to process real charges.
+Reusable Zod schemas define customer, address, delivery, payment, and order-item rules. The checkout UI uses those same field schemas for immediate feedback, while the server validates the complete payload again before opening the transaction.
+
+### Client-side persistence
+
+Cart state persists in `localStorage`, and incomplete checkout form values persist in `sessionStorage`. Both are convenience layers only; the server remains the source of truth for purchasable products and inventory.
 
 ### Technical SEO
 
@@ -105,6 +114,8 @@ npm test
 npm run build
 ```
 
+GitHub Actions runs the same install, lint, test, migration, and build sequence on pushes and pull requests to `main`. CI uses an ephemeral PostgreSQL service with non-production credentials, so no database secret is required for the workflow.
+
 E2E smoke:
 
 ```bash
@@ -134,22 +145,30 @@ Required environment variables:
 - `DIRECT_URL`
 - `NEXT_PUBLIC_SITE_URL`
 
-## Scope / non-goals
+For Vercel, configure all three variables for Preview and Production. `DATABASE_URL` is used by the running application, `DIRECT_URL` is used by Prisma migrations, and `NEXT_PUBLIC_SITE_URL` should be the canonical production origin, for example `https://tech-store-gilt.vercel.app`.
+
+Apply production migrations before relying on a new schema:
+
+```bash
+npx prisma migrate deploy
+```
+
+The catalog is database-backed and the main routes use timed revalidation, so builds and deployed requests need a reachable PostgreSQL database with the existing migrations applied. Product images are local files under `public/products`; no external image host configuration is required.
+
+## Trade-offs
 
 Deliberately out of scope for this portfolio version:
 
-- Real payment gateway.
-- Real shipping/logistics integration.
-- Real transactional emails.
-- Customer authentication and account area.
-- Admin panel or CMS.
-- Order history UI.
-- Production commerce readiness claims.
+- **No real payments:** payment options model the checkout decision without handling cards or claiming production payment security.
+- **No authentication:** the project focuses on the public storefront and order integrity rather than account lifecycle and authorization.
+- **No admin panel:** catalog and stock management stay database/seed driven to keep the portfolio scope centered on the customer flow.
+- **No real shipping integration:** delivery methods and costs are representative; there are no carrier quotes, labels, or tracking.
+- **Simulated checkout:** orders are persisted and stock rules are real, but there is no charge, fulfillment workflow, or transactional email.
 
-## Future improvements
+## What I would improve next
 
-- Refine cache and revalidation strategy for catalog and SEO routes.
-- Expand end-to-end coverage beyond the initial storefront smoke flow.
-- Add richer stock and checkout error handling.
-- Optionally add authentication and customer order history.
-- Add a lightweight admin workflow for catalog/order maintenance.
+- Add a dedicated order confirmation page with a safe lookup token.
+- Improve checkout feedback with field focus and retry guidance for stock changes.
+- Expand Playwright coverage for empty states, validation errors, and successful checkout.
+- Add an authenticated admin dashboard for catalog and order operations.
+- Integrate a payment provider in sandbox mode.

@@ -16,7 +16,10 @@ vi.mock('@/lib/server-cache', () => ({
 
 vi.mock('@/lib/orders-create', () => ({
   CreateOrderError: class CreateOrderError extends Error {
-    constructor(message: string) {
+    constructor(
+      public readonly code: string,
+      message = 'Revisá los datos de contacto y entrega ingresados.',
+    ) {
       super(message);
       this.name = 'CreateOrderError';
     }
@@ -38,7 +41,7 @@ describe('createOrderAction', () => {
     const result = await createOrderAction({
       buyer: {
         name: 'Tomás',
-        phone: '1234',
+        phone: '541155555555',
         email: 'tomas@example.com',
       },
       shippingAddress: 'Av. Siempre Viva 123',
@@ -66,7 +69,10 @@ describe('createOrderAction', () => {
 
   it('expone errores de validación conocidos como resultado tipado', async () => {
     createOrderMock.mockRejectedValue(
-      new CreateOrderError('Los datos de la orden no son válidos.'),
+      new CreateOrderError(
+        'INVALID_INPUT',
+        'Revisá los datos de contacto y entrega ingresados.',
+      ),
     );
 
     const result = await createOrderAction({
@@ -86,7 +92,8 @@ describe('createOrderAction', () => {
 
     expect(result).toEqual({
       status: 'error',
-      message: 'Los datos de la orden no son válidos.',
+      code: 'INVALID_INPUT',
+      message: 'Revisá los datos de contacto y entrega ingresados.',
     });
     expect(revalidateCatalogDataMock).not.toHaveBeenCalled();
 
@@ -101,7 +108,7 @@ describe('createOrderAction', () => {
     const result = await createOrderAction({
       buyer: {
         name: 'Tomás',
-        phone: '1234',
+        phone: '541155555555',
         email: 'tomas@example.com',
       },
       shippingAddress: 'Av. Siempre Viva 123',
@@ -115,7 +122,9 @@ describe('createOrderAction', () => {
 
     expect(result).toEqual({
       status: 'error',
-      message: 'No pudimos crear la orden. Intentá nuevamente en unos instantes.',
+      code: 'UNEXPECTED_ERROR',
+      message:
+        'No pudimos crear la orden por un problema temporal. Intentá nuevamente en unos instantes.',
     });
     expect(revalidateCatalogDataMock).not.toHaveBeenCalled();
   });

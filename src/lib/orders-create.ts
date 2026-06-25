@@ -7,9 +7,16 @@ import {
   type CreateOrderInput,
   createOrderInputSchema,
 } from '@/lib/order-create-schema';
+import {
+  CREATE_ORDER_ERROR_MESSAGES,
+  type CreateOrderErrorCode,
+} from '@/lib/order-errors';
 
 export class CreateOrderError extends Error {
-  constructor(message: string) {
+  constructor(
+    public readonly code: CreateOrderErrorCode,
+    message = CREATE_ORDER_ERROR_MESSAGES[code],
+  ) {
     super(message);
     this.name = 'CreateOrderError';
   }
@@ -23,7 +30,22 @@ export async function createOrder(input: unknown): Promise<{ id: string }> {
   const parsedInput = createOrderInputSchema.safeParse(input);
 
   if (!parsedInput.success) {
-    throw new CreateOrderError('Los datos de la orden no son válidos.');
+    const hasEmptyCart = parsedInput.error.issues.some(
+      (issue) => issue.path[0] === 'items' && issue.path.length === 1,
+    );
+    const hasInvalidQuantity = parsedInput.error.issues.some(
+      (issue) => issue.path[0] === 'items' && issue.path[2] === 'quantity',
+    );
+
+    if (hasEmptyCart) {
+      throw new CreateOrderError('EMPTY_CART');
+    }
+
+    if (hasInvalidQuantity) {
+      throw new CreateOrderError('INVALID_QUANTITY');
+    }
+
+    throw new CreateOrderError('INVALID_INPUT');
   }
 
   const {
@@ -39,7 +61,7 @@ export async function createOrder(input: unknown): Promise<{ id: string }> {
   const productIds = [...new Set(items.map((item) => item.id))];
 
   if (productIds.length !== items.length) {
-    throw new CreateOrderError('La orden contiene productos duplicados.');
+    throw new CreateOrderError('DUPLICATE_PRODUCT');
   }
 
   return prisma.$transaction(async (tx) => {
@@ -48,17 +70,21 @@ export async function createOrder(input: unknown): Promise<{ id: string }> {
         id: {
           in: productIds,
         },
-        isActive: true,
       },
       select: {
         id: true,
+        isActive: true,
         price: true,
         stock: true,
       },
     });
 
     if (products.length !== productIds.length) {
-      throw new CreateOrderError('Uno o más productos no están disponibles.');
+      throw new CreateOrderError('PRODUCT_NOT_FOUND');
+    }
+
+    if (products.some((product) => !product.isActive)) {
+      throw new CreateOrderError('PRODUCT_INACTIVE');
     }
 
     const productsById = new Map(products.map((product) => [product.id, product]));
@@ -68,11 +94,11 @@ export async function createOrder(input: unknown): Promise<{ id: string }> {
       const product = productsById.get(item.id);
 
       if (!product) {
-        throw new CreateOrderError('Uno o más productos no están disponibles.');
+        throw new CreateOrderError('PRODUCT_NOT_FOUND');
       }
 
       if (product.stock < item.quantity) {
-        throw new CreateOrderError('No hay stock suficiente para uno o más productos.');
+        throw new CreateOrderError('INSUFFICIENT_STOCK');
       }
 
       const subtotal = product.price.mul(item.quantity);
@@ -103,7 +129,7 @@ export async function createOrder(input: unknown): Promise<{ id: string }> {
       });
 
       if (updateResult.count !== 1) {
-        throw new CreateOrderError('No hay stock suficiente para uno o más productos.');
+        throw new CreateOrderError('INSUFFICIENT_STOCK');
       }
     }
 

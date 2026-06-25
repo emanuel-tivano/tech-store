@@ -11,7 +11,14 @@ vi.mock('@/lib/prisma', () => ({
   prisma: prismaMock,
 }));
 
-import { CreateOrderError, createOrder } from '@/lib/orders-create';
+import { createOrder } from '@/lib/orders-create';
+
+const validBuyer = {
+  name: 'Tomás',
+  lastName: 'Ibarra',
+  phone: '541155555555',
+  email: 'tomas@example.com',
+};
 
 describe('createOrder', () => {
   beforeEach(() => {
@@ -45,9 +52,54 @@ describe('createOrder', () => {
         paymentMethod: 'credit-card',
         items: [],
       }),
-    ).rejects.toThrowError(
-      new CreateOrderError('Los datos de la orden no son válidos.'),
-    );
+    ).rejects.toMatchObject({
+      code: 'EMPTY_CART',
+      message: 'No podés generar una orden con el carrito vacío.',
+    });
+
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('rechaza datos inválidos del cliente antes de consultar Prisma', async () => {
+    await expect(
+      createOrder({
+        buyer: {
+          name: 'T',
+          phone: '1234',
+          email: 'invalido',
+        },
+        shippingAddress: 'A',
+        shippingCity: '',
+        shippingProvince: '',
+        shippingPostalCode: 'ABC',
+        deliveryMethod: 'home-delivery',
+        paymentMethod: 'credit-card',
+        items: [{ id: 'prod-1', quantity: 1 }],
+      }),
+    ).rejects.toMatchObject({
+      code: 'INVALID_INPUT',
+      message: 'Revisá los datos de contacto y entrega ingresados.',
+    });
+
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('rechaza cantidades inválidas antes de consultar Prisma', async () => {
+    await expect(
+      createOrder({
+        buyer: validBuyer,
+        shippingAddress: 'Av. Siempre Viva 123',
+        shippingCity: 'CABA',
+        shippingProvince: 'Buenos Aires',
+        shippingPostalCode: '1425',
+        deliveryMethod: 'home-delivery',
+        paymentMethod: 'credit-card',
+        items: [{ id: 'prod-1', quantity: 0 }],
+      }),
+    ).rejects.toMatchObject({
+      code: 'INVALID_QUANTITY',
+      message: 'La cantidad de cada producto debe ser un número entero mayor a cero.',
+    });
 
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });
@@ -55,11 +107,7 @@ describe('createOrder', () => {
   it('rechaza productos duplicados antes de consultar Prisma', async () => {
     await expect(
       createOrder({
-        buyer: {
-          name: 'Tomás',
-          phone: '1234',
-          email: 'tomas@example.com',
-        },
+        buyer: validBuyer,
         shippingAddress: 'Av. Siempre Viva 123',
         shippingCity: 'CABA',
         shippingProvince: 'Buenos Aires',
@@ -71,9 +119,10 @@ describe('createOrder', () => {
           { id: 'prod-1', quantity: 2 },
         ],
       }),
-    ).rejects.toThrowError(
-      new CreateOrderError('La orden contiene productos duplicados.'),
-    );
+    ).rejects.toMatchObject({
+      code: 'DUPLICATE_PRODUCT',
+      message: 'La orden contiene productos duplicados.',
+    });
 
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });
@@ -86,6 +135,7 @@ describe('createOrder', () => {
             id: 'prod-1',
             price: new Prisma.Decimal('1250.50'),
             stock: 10,
+            isActive: true,
           },
         ]),
         updateMany: vi.fn(),
@@ -98,12 +148,7 @@ describe('createOrder', () => {
 
     await expect(
       createOrder({
-        buyer: {
-          name: 'Tomás',
-          lastName: 'Ibarra',
-          phone: '1234',
-          email: 'tomas@example.com',
-        },
+        buyer: validBuyer,
         shippingAddress: 'Av. Siempre Viva 123',
         shippingCity: 'CABA',
         shippingProvince: 'Buenos Aires',
@@ -115,9 +160,50 @@ describe('createOrder', () => {
           { id: 'prod-2', quantity: 2 },
         ],
       }),
-    ).rejects.toThrowError(
-      new CreateOrderError('Uno o más productos no están disponibles.'),
-    );
+    ).rejects.toMatchObject({
+      code: 'PRODUCT_NOT_FOUND',
+      message: 'Uno o más productos ya no existen. Actualizá el carrito e intentá nuevamente.',
+    });
+
+    expect(tx.product.updateMany).not.toHaveBeenCalled();
+    expect(tx.order.create).not.toHaveBeenCalled();
+  });
+
+  it('rechaza productos inactivos', async () => {
+    const tx = {
+      product: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'prod-1',
+            price: new Prisma.Decimal('1250.50'),
+            stock: 10,
+            isActive: false,
+          },
+        ]),
+        updateMany: vi.fn(),
+      },
+      order: {
+        create: vi.fn(),
+      },
+    };
+    prismaMock.$transaction.mockImplementation(async (callback) => callback(tx));
+
+    await expect(
+      createOrder({
+        buyer: validBuyer,
+        shippingAddress: 'Av. Siempre Viva 123',
+        shippingCity: 'CABA',
+        shippingProvince: 'Buenos Aires',
+        shippingPostalCode: '1425',
+        deliveryMethod: 'home-delivery',
+        paymentMethod: 'credit-card',
+        items: [{ id: 'prod-1', quantity: 1 }],
+      }),
+    ).rejects.toMatchObject({
+      code: 'PRODUCT_INACTIVE',
+      message:
+        'Uno o más productos ya no están disponibles para la venta. Quitalos del carrito e intentá nuevamente.',
+    });
 
     expect(tx.product.updateMany).not.toHaveBeenCalled();
     expect(tx.order.create).not.toHaveBeenCalled();
@@ -131,6 +217,7 @@ describe('createOrder', () => {
             id: 'prod-1',
             price: new Prisma.Decimal('1250.50'),
             stock: 1,
+            isActive: true,
           },
         ]),
         updateMany: vi.fn(),
@@ -143,12 +230,7 @@ describe('createOrder', () => {
 
     await expect(
       createOrder({
-        buyer: {
-          name: 'Tomás',
-          lastName: 'Ibarra',
-          phone: '1234',
-          email: 'tomas@example.com',
-        },
+        buyer: validBuyer,
         shippingAddress: 'Av. Siempre Viva 123',
         shippingCity: 'CABA',
         shippingProvince: 'Buenos Aires',
@@ -157,9 +239,11 @@ describe('createOrder', () => {
         paymentMethod: 'credit-card',
         items: [{ id: 'prod-1', quantity: 2 }],
       }),
-    ).rejects.toThrowError(
-      new CreateOrderError('No hay stock suficiente para uno o más productos.'),
-    );
+    ).rejects.toMatchObject({
+      code: 'INSUFFICIENT_STOCK',
+      message:
+        'No hay stock suficiente para uno o más productos. Revisá las cantidades del carrito.',
+    });
 
     expect(tx.product.updateMany).not.toHaveBeenCalled();
     expect(tx.order.create).not.toHaveBeenCalled();
@@ -173,6 +257,7 @@ describe('createOrder', () => {
             id: 'prod-1',
             price: new Prisma.Decimal('1250.50'),
             stock: 4,
+            isActive: true,
           },
         ]),
         updateMany: vi.fn().mockResolvedValue({ count: 0 }),
@@ -185,12 +270,7 @@ describe('createOrder', () => {
 
     await expect(
       createOrder({
-        buyer: {
-          name: 'Tomás',
-          lastName: 'Ibarra',
-          phone: '1234',
-          email: 'tomas@example.com',
-        },
+        buyer: validBuyer,
         shippingAddress: 'Av. Siempre Viva 123',
         shippingCity: 'CABA',
         shippingProvince: 'Buenos Aires',
@@ -199,9 +279,11 @@ describe('createOrder', () => {
         paymentMethod: 'credit-card',
         items: [{ id: 'prod-1', quantity: 2 }],
       }),
-    ).rejects.toThrowError(
-      new CreateOrderError('No hay stock suficiente para uno o más productos.'),
-    );
+    ).rejects.toMatchObject({
+      code: 'INSUFFICIENT_STOCK',
+      message:
+        'No hay stock suficiente para uno o más productos. Revisá las cantidades del carrito.',
+    });
 
     expect(tx.product.updateMany).toHaveBeenCalledTimes(1);
     expect(tx.order.create).not.toHaveBeenCalled();
@@ -215,11 +297,13 @@ describe('createOrder', () => {
             id: 'prod-1',
             price: new Prisma.Decimal('1250.50'),
             stock: 10,
+            isActive: true,
           },
           {
             id: 'prod-2',
             price: new Prisma.Decimal('99.99'),
             stock: 8,
+            isActive: true,
           },
         ]),
         updateMany: vi.fn().mockResolvedValue({ count: 1 }),
@@ -233,12 +317,7 @@ describe('createOrder', () => {
     prismaMock.$transaction.mockImplementation(async (callback) => callback(tx));
 
     const result = await createOrder({
-      buyer: {
-        name: 'Tomás',
-        lastName: 'Ibarra',
-        phone: '1234',
-        email: 'tomas@example.com',
-      },
+      buyer: validBuyer,
       shippingAddress: 'Av. Siempre Viva 123',
       shippingCity: 'CABA',
       shippingProvince: 'Buenos Aires',
@@ -258,10 +337,10 @@ describe('createOrder', () => {
         id: {
           in: ['prod-1', 'prod-2'],
         },
-        isActive: true,
       },
       select: {
         id: true,
+        isActive: true,
         price: true,
         stock: true,
       },
@@ -304,7 +383,7 @@ describe('createOrder', () => {
       data: {
         customerName: 'Tomás Ibarra',
         customerEmail: 'tomas@example.com',
-        customerPhone: '1234',
+        customerPhone: '541155555555',
         shippingAddress: 'Av. Siempre Viva 123',
         shippingCity: 'CABA',
         shippingProvince: 'Buenos Aires',

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { normalizePhone, validateCheckoutForm } from '@/features/checkout/validation';
+import { createOrderInputSchema } from '@/lib/order-create-schema';
 
 const validValues = {
   fullName: 'Tomás Ibarra',
@@ -77,5 +78,31 @@ describe('validateCheckoutForm', () => {
 
     expect(errors).toEqual({});
     expect(normalizePhone('+54 11 5555 5555')).toBe('541155555555');
+  });
+
+  it('mantiene las reglas compartidas alineadas con el schema del servidor', () => {
+    const result = createOrderInputSchema.safeParse({
+      buyer: {
+        name: 'Tomás',
+        lastName: 'Ibarra',
+        phone: validValues.phone,
+        email: validValues.email,
+      },
+      shippingAddress: validValues.address,
+      shippingCity: validValues.city,
+      shippingProvince: validValues.province,
+      shippingPostalCode: validValues.postalCode,
+      deliveryMethod: validValues.deliveryMethod,
+      paymentMethod: validValues.paymentMethod,
+      items: [{ id: 'prod-1', quantity: 1 }],
+    });
+
+    expect(result.success).toBe(true);
+
+    if (result.success) {
+      expect(result.data.buyer.phone).toBe('541155555555');
+      expect(result.data.buyer.email).toBe('tomas@example.com');
+      expect(result.data.shippingPostalCode).toBe('1425');
+    }
   });
 });

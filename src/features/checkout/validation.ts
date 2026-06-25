@@ -1,3 +1,18 @@
+import { z } from 'zod';
+
+import {
+  customerEmailSchema,
+  customerFullNameSchema,
+  customerPhoneSchema,
+  deliveryMethodSchema,
+  normalizePhone,
+  normalizePostalCode,
+  paymentMethodSchema,
+  shippingAddressSchema,
+  shippingCitySchema,
+  shippingPostalCodeSchema,
+  shippingProvinceSchema,
+} from '@/lib/order-create-schema';
 import type { DeliveryMethod, PaymentMethod } from '@/types';
 
 export interface CheckoutFormValues {
@@ -27,41 +42,29 @@ export interface CheckoutFormErrors {
   cart?: string;
 }
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const argentinaPhonePattern = /^(?:54)?\d{10,13}$/;
-const argentinaPostalCodePattern = /^(?:\d{4}|[A-Z]\d{4}[A-Z]{3})$/;
+function getValidationMessage(schema: z.ZodType, value: unknown) {
+  const result = schema.safeParse(value);
 
-export function normalizePhone(phone: string) {
-  return phone.replace(/\D/g, '');
-}
-
-export function normalizePostalCode(postalCode: string) {
-  return postalCode.trim().toUpperCase();
+  return result.success ? undefined : result.error.issues[0]?.message;
 }
 
 export function validateCheckoutForm(
   values: CheckoutFormValues,
   hasItems: boolean,
 ): CheckoutFormErrors {
-  const errors: CheckoutFormErrors = {};
-  const fullName = values.fullName.trim();
+  const errors: CheckoutFormErrors = {
+    fullName: getValidationMessage(customerFullNameSchema, values.fullName),
+    email: getValidationMessage(customerEmailSchema, values.email),
+    phone: getValidationMessage(customerPhoneSchema, values.phone),
+    address: getValidationMessage(shippingAddressSchema, values.address),
+    city: getValidationMessage(shippingCitySchema, values.city),
+    province: getValidationMessage(shippingProvinceSchema, values.province),
+    postalCode: getValidationMessage(shippingPostalCodeSchema, values.postalCode),
+    deliveryMethod: getValidationMessage(deliveryMethodSchema, values.deliveryMethod),
+    paymentMethod: getValidationMessage(paymentMethodSchema, values.paymentMethod),
+  };
   const email = values.email.trim().toLowerCase();
   const repeatEmail = values.repeatEmail.trim().toLowerCase();
-  const phone = normalizePhone(values.phone);
-  const address = values.address.trim();
-  const city = values.city.trim();
-  const province = values.province.trim();
-  const postalCode = normalizePostalCode(values.postalCode);
-
-  if (fullName.length < 3) {
-    errors.fullName = 'Ingresá un nombre completo válido.';
-  }
-
-  if (!email) {
-    errors.email = 'El email es obligatorio.';
-  } else if (!emailPattern.test(email)) {
-    errors.email = 'Ingresá un email válido.';
-  }
 
   if (!repeatEmail) {
     errors.repeatEmail = 'Confirmá tu email.';
@@ -69,41 +72,13 @@ export function validateCheckoutForm(
     errors.repeatEmail = 'Los correos electrónicos deben coincidir.';
   }
 
-  if (!phone) {
-    errors.phone = 'El teléfono es obligatorio.';
-  } else if (!argentinaPhonePattern.test(phone)) {
-    errors.phone = 'Ingresá un teléfono válido de Argentina.';
-  }
-
-  if (address.length < 5) {
-    errors.address = 'Ingresá una dirección válida.';
-  }
-
-  if (city.length < 2) {
-    errors.city = 'Ingresá una ciudad válida.';
-  }
-
-  if (province.length < 2) {
-    errors.province = 'Ingresá una provincia válida.';
-  }
-
-  if (!postalCode) {
-    errors.postalCode = 'El código postal es obligatorio.';
-  } else if (!argentinaPostalCodePattern.test(postalCode)) {
-    errors.postalCode = 'Ingresá un código postal argentino válido.';
-  }
-
-  if (!values.deliveryMethod) {
-    errors.deliveryMethod = 'Seleccioná un método de entrega.';
-  }
-
-  if (!values.paymentMethod) {
-    errors.paymentMethod = 'Seleccioná un método de pago.';
-  }
-
   if (!hasItems) {
     errors.cart = 'No podés generar una orden con el carrito vacío.';
   }
 
-  return errors;
+  return Object.fromEntries(
+    Object.entries(errors).filter(([, message]) => Boolean(message)),
+  ) as CheckoutFormErrors;
 }
+
+export { normalizePhone, normalizePostalCode };
