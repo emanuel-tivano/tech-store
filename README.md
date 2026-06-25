@@ -12,7 +12,7 @@ Portfolio e-commerce storefront built with Next.js App Router, TypeScript, Tailw
 
 ## Demo
 
-- Live app: https://tech-store-gilt.vercel.app
+- Live app: https://tech-store-arg.vercel.app
 
 ## Feature summary
 
